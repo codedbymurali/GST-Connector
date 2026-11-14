@@ -5,215 +5,251 @@
     <title>CA GST Suite Pro — Professional Tax Workstation</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .font-mono { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
-    </style>
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body class="bg-[#F8FAFC] text-[#0F172A] min-h-screen selection:bg-blue-600 selection:text-white">
-    <!-- TOP TELEMETRY NAVBAR -->
-    <header class="border-b border-[#E2E8F0] bg-white sticky top-0 z-30 shadow-sm">
-        <div class="max-w-7xl mx-auto px-6 py-3.5 flex flex-wrap justify-between items-center gap-4">
-            <div class="flex items-center gap-3.5">
-                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-bold text-lg text-white shadow-md shadow-blue-500/20">CA</div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h1 class="text-base font-bold tracking-tight text-[#0F172A]">CA GST Suite Pro</h1>
-                        <span class="text-[10px] uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-0.5 rounded-full font-bold">Enterprise Desk</span>
-                    </div>
-                    <p class="text-xs text-[#64748B] font-medium">Live Tally Prime Connector & GSTR-2B Forensic Reconciliation</p>
-                </div>
-            </div>
 
-            <div class="flex items-center gap-2.5 text-xs">
-                <button onclick="openVaultModal()" class="bg-white hover:bg-[#F1F5F9] text-[#475569] font-semibold px-3.5 py-2 rounded-xl border border-[#E2E8F0] shadow-sm transition flex items-center gap-1.5">
-                    <span>📂</span> <span>Vault History</span>
-                </button>
-                <button onclick="saveCurrentToVault()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-xl shadow-sm transition flex items-center gap-1.5">
-                    <span>💾</span> <span>Save to Vault</span>
-                </button>
-                <button onclick="quickDemoBoth()" class="bg-[#0F172A] hover:bg-slate-800 text-white font-semibold px-4 py-2 rounded-xl shadow-sm transition flex items-center gap-1.5">
-                    <span>⚡ Load Sample Data</span>
-                </button>
-                <button onclick="resetAll()" class="bg-white hover:bg-[#FEF2F2] text-[#991B1B] font-semibold px-3 py-2 rounded-xl border border-[#E2E8F0] transition">
-                    🗑 Reset
-                </button>
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- SIDEBAR NAVIGATION (5 GST Modules) -->
+        <aside class="w-72 bg-slate-900 text-white flex flex-col shadow-xl flex-shrink-0 z-40">
+            <div class="p-6 text-xl font-bold tracking-wider border-b border-slate-800 text-teal-400 flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-teal-500 flex items-center justify-center text-white text-sm font-bold shadow-md">CA</div>
+                <span>CA GST Suite Pro</span>
             </div>
+            <nav class="flex-1 p-4 space-y-1.5 overflow-y-auto text-xs font-medium">
+                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600 text-white shadow-sm transition">
+                    <span>📊</span> <span>Dashboard / Summary</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 text-slate-300 transition">
+                    <span>🛒</span> <span>Purchase Recon (Mod 2)</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 text-slate-300 transition">
+                    <span>📈</span> <span>Sales Recon (Mod 1)</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 text-slate-300 transition">
+                    <span>📑</span> <span>Credit/Debit Notes</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 text-slate-300 transition">
+                    <span>💰</span> <span>ITC Eligibility u/s 17(5)</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 text-slate-300 transition">
+                    <span>📋</span> <span>Tax Liability vs GSTR-3B</span>
+                </a>
+            </nav>
+            <div class="p-4 border-t border-slate-800 text-[11px] text-slate-500 bg-slate-950">
+                Secure Local Client (127.0.0.1)
+            </div>
+        </aside>
+
+        <!-- MAIN VIEWPORT CONTAINER -->
+        <div class="flex-1 flex flex-col overflow-y-auto">
+
+            <!-- TOP TELEMETRY NAVBAR -->
+            <header class="border-b border-[#E2E8F0] bg-white sticky top-0 z-30 shadow-sm">
+                <div class="max-w-7xl mx-auto px-6 py-3.5 flex flex-wrap justify-between items-center gap-4 w-full">
+                    <div class="flex items-center gap-3.5">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h1 class="text-base font-bold tracking-tight text-[#0F172A]">Module 2: Purchase Reconciliation & ITC Engine</h1>
+                                <span class="text-[10px] uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-0.5 rounded-full font-bold">Enterprise Desk</span>
+                            </div>
+                            <p class="text-xs text-[#64748B] font-medium">Live Tally Prime Connector & GSTR-2B Forensic Reconciliation</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2.5 text-xs">
+                        <button onclick="openVaultModal()" class="bg-white hover:bg-[#F1F5F9] text-[#475569] font-semibold px-3.5 py-2 rounded-xl border border-[#E2E8F0] shadow-sm transition flex items-center gap-1.5">
+                            <span>📂</span> <span>Vault History</span>
+                        </button>
+                        <button onclick="saveCurrentToVault()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-xl shadow-sm transition flex items-center gap-1.5">
+                            <span>💾</span> <span>Save to Vault</span>
+                        </button>
+                        <button onclick="quickDemoBoth()" class="bg-[#0F172A] hover:bg-slate-800 text-white font-semibold px-4 py-2 rounded-xl shadow-sm transition flex items-center gap-1.5">
+                            <span>⚡ Load Sample Data</span>
+                        </button>
+                        <button onclick="resetAll()" class="bg-white hover:bg-[#FEF2F2] text-[#991B1B] font-semibold px-3 py-2 rounded-xl border border-[#E2E8F0] transition">
+                            🗑 Reset
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <main class="max-w-7xl mx-auto px-6 py-8 space-y-6 w-full">
+                <!-- DUAL CONNECTOR HUB -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- SOURCE 1 CARD: ERP / BOOKS -->
+                    <div class="bg-white border border-[#E2E8F0] rounded-2xl p-6 shadow-sm space-y-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200">Source 1 • Books / Tally</span>
+                                <h2 class="text-sm font-bold mt-2 text-[#0F172A]">Purchase Register Connector</h2>
+                            </div>
+                            <span id="erpBadge" class="text-xs bg-[#F1F5F9] text-[#64748B] px-3 py-1 rounded-full border border-[#E2E8F0] font-medium">Not Connected</span>
+                        </div>
+
+                        <div class="relative grid grid-cols-3 bg-[#F8FAFC] p-1.5 rounded-xl border border-[#E2E8F0] text-xs font-semibold text-[#475569]">
+                            <div id="erpSlider" class="absolute top-1.5 bottom-1.5 left-1.5 w-[calc(33.33%-4px)] bg-blue-600 rounded-lg shadow-sm transition-all duration-300"></div>
+                            <button onclick="switchErpTab('api')" id="erpTab_api" class="relative z-10 py-1.5 rounded-lg text-white text-center">⚡ Tally API</button>
+                            <button onclick="switchErpTab('upload')" id="erpTab_upload" class="relative z-10 py-1.5 rounded-lg hover:text-[#0F172A] text-center">📂 Upload</button>
+                            <button onclick="switchErpTab('sample')" id="erpTab_sample" class="relative z-10 py-1.5 rounded-lg hover:text-[#0F172A] text-center">🧪 Sample</button>
+                        </div>
+
+                        <div id="erpPane_api" class="space-y-3 text-xs">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                <input id="erpUrl" type="text" placeholder="Tally URL (localhost:9000)" class="md:col-span-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-blue-600 font-mono" />
+                                <input id="erpKey" type="text" placeholder="API Key" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-blue-600" />
+                                <input id="erpSecret" type="password" placeholder="API Secret" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-blue-600" />
+                                <input id="erpMonth" type="month" value="2026-10" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-blue-600 font-mono" />
+                            </div>
+                            <button onclick="fetchErpLive()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl shadow-sm transition">
+                                ⚡ Fetch Vouchers from Tally Books
+                            </button>
+                        </div>
+
+                        <div id="erpPane_upload" class="hidden space-y-3 text-xs">
+                            <input type="file" id="erpFileInput" accept=".xlsx,.xls,.csv,.xml" class="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-2.5 text-[#475569] file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 cursor-pointer" />
+                            <button onclick="uploadErpFile()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl transition">
+                                📤 Upload Purchase Register
+                            </button>
+                        </div>
+
+                        <div id="erpPane_sample" class="hidden space-y-3 text-xs">
+                            <p class="text-[#64748B]">Load 6 standard sample purchase invoices into memory.</p>
+                            <button onclick="loadErpSample()" class="w-full bg-[#F1F5F9] hover:bg-[#E2E8F0] border border-[#E2E8F0] text-[#0F172A] font-semibold py-2.5 rounded-xl transition">
+                                🧪 Load Sample Purchase Register
+                            </button>
+                        </div>
+
+                        <div class="pt-3 border-t border-[#E2E8F0] flex justify-between text-xs text-[#64748B] font-medium">
+                            <span>Loaded Bills: <strong id="erpCount" class="text-[#0F172A] font-mono">0</strong></span>
+                            <span>Total Books Tax: <strong id="erpTax" class="text-blue-600 font-mono">₹ 0.00</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- SOURCE 2 CARD: GST PORTAL -->
+                    <div class="bg-white border border-[#E2E8F0] rounded-2xl p-6 shadow-sm space-y-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">Source 2 • GST Portal (gov.in)</span>
+                                <h2 class="text-sm font-bold mt-2 text-[#0F172A]">GSTR-2B Portal Connector</h2>
+                            </div>
+                            <span id="portalBadge" class="text-xs bg-[#F1F5F9] text-[#64748B] px-3 py-1 rounded-full border border-[#E2E8F0] font-medium">Not Connected</span>
+                        </div>
+
+                        <div class="relative grid grid-cols-3 bg-[#F8FAFC] p-1.5 rounded-xl border border-[#E2E8F0] text-xs font-semibold text-[#475569]">
+                            <div id="portalSlider" class="absolute top-1.5 bottom-1.5 left-1.5 w-[calc(33.33%-4px)] bg-emerald-600 rounded-lg shadow-sm transition-all duration-300"></div>
+                            <button onclick="switchPortalTab('api')" id="portalTab_api" class="relative z-10 py-1.5 rounded-lg text-white text-center">⚡ Portal API</button>
+                            <button onclick="switchPortalTab('upload')" id="portalTab_upload" class="relative z-10 py-1.5 rounded-lg hover:text-[#0F172A] text-center">📂 Upload 2B</button>
+                            <button onclick="switchPortalTab('sample')" id="portalTab_sample" class="relative z-10 py-1.5 rounded-lg hover:text-[#0F172A] text-center">🧪 Sample</button>
+                        </div>
+
+                        <div id="portalPane_api" class="space-y-3 text-xs">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                <input id="portalUsername" type="text" placeholder="GST Username" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-emerald-600" />
+                                <input id="portalPassword" type="password" placeholder="Password" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-emerald-600" />
+                                <input id="portalPeriod" type="text" value="102026" placeholder="MMYYYY" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-emerald-600 font-mono" />
+                            </div>
+                            <button onclick="fetchPortalLive()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl transition">
+                                ⚡ Fetch GSTR-2B Directly from Portal
+                            </button>
+                        </div>
+
+                        <div id="portalPane_upload" class="hidden space-y-3 text-xs">
+                            <input type="file" id="portalFileInput" accept=".json,.xlsx,.xls,.csv" class="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-2.5 text-[#475569] file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 cursor-pointer" />
+                            <button onclick="uploadPortalFile()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl transition">
+                                📤 Upload Official GSTR-2B JSON
+                            </button>
+                        </div>
+
+                        <div id="portalPane_sample" class="hidden space-y-3 text-xs">
+                            <p class="text-[#64748B]">Load 6 standard sample GSTR-2B portal invoices.</p>
+                            <button onclick="loadPortalSample()" class="w-full bg-[#F1F5F9] hover:bg-[#E2E8F0] border border-[#E2E8F0] text-[#0F172A] font-semibold py-2.5 rounded-xl transition">
+                                🧪 Load Sample GSTR-2B Data
+                            </button>
+                        </div>
+
+                        <div class="pt-3 border-t border-[#E2E8F0] flex justify-between text-xs text-[#64748B] font-medium">
+                            <span>Loaded 2B Bills: <strong id="portalCount" class="text-[#0F172A] font-mono">0</strong></span>
+                            <span>Total 2B Tax: <strong id="portalTax" class="text-emerald-600 font-mono">₹ 0.00</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STATUS SUMMARY CARDS -->
+                <div id="statusGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4"></div>
+
+                <!-- ACTION TOOLBAR -->
+                <div class="bg-white border border-[#E2E8F0] rounded-2xl p-4 flex flex-wrap justify-between items-center gap-4 shadow-sm">
+                    <div class="flex flex-wrap items-center gap-3 flex-1 min-w-[300px]">
+                        <div class="bg-[#F8FAFC] p-1.5 rounded-xl border border-[#E2E8F0] flex text-xs font-semibold text-[#475569]">
+                            <button onclick="setViewMode('bills')" id="viewBtn_bills" class="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white shadow-sm transition">📄 Bill-wise</button>
+                            <button onclick="setViewMode('parties')" id="viewBtn_parties" class="px-3.5 py-1.5 rounded-lg hover:text-[#0F172A] transition">🏢 Party-wise</button>
+                        </div>
+
+                        <div class="relative flex-1 min-w-[240px]">
+                            <input id="searchBox" oninput="renderActiveView()" type="text" placeholder="🔍 Search GSTIN, Supplier, Inv No..." class="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3.5 py-2 text-xs text-[#0F172A] focus:outline-none focus:border-blue-600" />
+                        </div>
+
+                        <div class="flex items-center gap-2 text-xs bg-[#F8FAFC] border border-[#E2E8F0] px-3 py-2 rounded-xl text-[#475569]">
+                            <span>±₹</span>
+                            <input id="tolInput" type="number" value="2" step="1" onchange="reRunWithTolerance()" class="w-10 bg-transparent text-[#0F172A] font-bold font-mono text-center focus:outline-none" />
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 text-xs font-semibold">
+                        <button onclick="exportFile('xlsx')" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 px-3.5 py-2 rounded-xl transition flex items-center gap-1.5">
+                            <span>📊</span> <span>Export Excel</span>
+                        </button>
+                        <button onclick="exportFile('csv')" class="bg-white hover:bg-[#F1F5F9] text-[#475569] border border-[#E2E8F0] px-3 py-2 rounded-xl transition">CSV</button>
+                        <button onclick="exportFile('json')" class="bg-white hover:bg-[#F1F5F9] text-[#475569] border border-[#E2E8F0] px-3 py-2 rounded-xl transition">JSON</button>
+                    </div>
+                </div>
+
+                <!-- DATA TABLE CONTAINER -->
+                <div class="bg-white border border-[#E2E8F0] rounded-2xl overflow-hidden shadow-sm">
+                    <div id="billsTableWrap" class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-[#F8FAFC] text-[#475569] uppercase tracking-wider font-semibold border-b border-[#E2E8F0]">
+                                <tr>
+                                    <th class="p-3.5">GSTIN</th>
+                                    <th class="p-3.5">Supplier Name</th>
+                                    <th class="p-3.5">ERP Inv No</th>
+                                    <th class="p-3.5">2B Inv No</th>
+                                    <th class="p-3.5">Date</th>
+                                    <th class="p-3.5 text-right">ERP Tax (₹)</th>
+                                    <th class="p-3.5 text-right">2B Tax (₹)</th>
+                                    <th class="p-3.5 text-right">Diff (₹)</th>
+                                    <th class="p-3.5">Status</th>
+                                    <th class="p-3.5">Matching Pass</th>
+                                    <th class="p-3.5">Suggested Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="billsTbody" class="divide-y divide-[#E2E8F0]"></tbody>
+                        </table>
+                    </div>
+
+                    <div id="partiesTableWrap" class="hidden overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-[#F8FAFC] text-[#475569] uppercase tracking-wider font-semibold border-b border-[#E2E8F0]">
+                                <tr>
+                                    <th class="p-3.5">Supplier GSTIN</th>
+                                    <th class="p-4">Supplier Legal / Trade Name</th>
+                                    <th class="p-3.5 text-center">Total Invoices</th>
+                                    <th class="p-3.5 text-right">Total ERP Tax (₹)</th>
+                                    <th class="p-3.5 text-right">Total Portal 2B Tax (₹)</th>
+                                    <th class="p-3.5 text-right">Net Tax Difference (₹)</th>
+                                    <th class="p-3.5">Party Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="partiesTbody" class="divide-y divide-[#E2E8F0]"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
         </div>
-    </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-8 space-y-6">
-        <!-- DUAL CONNECTOR HUB -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- SOURCE 1 CARD: ERP / BOOKS -->
-            <div class="bg-white border border-[#E2E8F0] rounded-2xl p-6 shadow-sm space-y-4">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200">Source 1 • Books / Tally</span>
-                        <h2 class="text-sm font-bold mt-2 text-[#0F172A]">Purchase Register Connector</h2>
-                    </div>
-                    <span id="erpBadge" class="text-xs bg-[#F1F5F9] text-[#64748B] px-3 py-1 rounded-full border border-[#E2E8F0] font-medium">Not Connected</span>
-                </div>
-
-                <div class="relative grid grid-cols-3 bg-[#F8FAFC] p-1.5 rounded-xl border border-[#E2E8F0] text-xs font-semibold text-[#475569]">
-                    <div id="erpSlider" class="absolute top-1.5 bottom-1.5 left-1.5 w-[calc(33.33%-4px)] bg-blue-600 rounded-lg shadow-sm transition-all duration-300"></div>
-                    <button onclick="switchErpTab('api')" id="erpTab_api" class="relative z-10 py-1.5 rounded-lg text-white text-center">⚡ Tally API</button>
-                    <button onclick="switchErpTab('upload')" id="erpTab_upload" class="relative z-10 py-1.5 rounded-lg hover:text-[#0F172A] text-center">📂 Upload</button>
-                    <button onclick="switchErpTab('sample')" id="erpTab_sample" class="relative z-10 py-1.5 rounded-lg hover:text-[#0F172A] text-center">🧪 Sample</button>
-                </div>
-
-                <div id="erpPane_api" class="space-y-3 text-xs">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                        <input id="erpUrl" type="text" placeholder="Tally URL (localhost:9000)" class="md:col-span-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-blue-600 font-mono" />
-                        <input id="erpKey" type="text" placeholder="API Key" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-blue-600" />
-                        <input id="erpSecret" type="password" placeholder="API Secret" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-blue-600" />
-                        <input id="erpMonth" type="month" value="2026-10" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-blue-600 font-mono" />
-                    </div>
-                    <button onclick="fetchErpLive()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl shadow-sm transition">
-                        ⚡ Fetch Vouchers from Tally Books
-                    </button>
-                </div>
-
-                <div id="erpPane_upload" class="hidden space-y-3 text-xs">
-                    <input type="file" id="erpFileInput" accept=".xlsx,.xls,.csv,.xml" class="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-2.5 text-[#475569] file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 cursor-pointer" />
-                    <button onclick="uploadErpFile()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl transition">
-                        📤 Upload Purchase Register
-                    </button>
-                </div>
-
-                <div id="erpPane_sample" class="hidden space-y-3 text-xs">
-                    <p class="text-[#64748B]">Load 6 standard sample purchase invoices into memory.</p>
-                    <button onclick="loadErpSample()" class="w-full bg-[#F1F5F9] hover:bg-[#E2E8F0] border border-[#E2E8F0] text-[#0F172A] font-semibold py-2.5 rounded-xl transition">
-                        🧪 Load Sample Purchase Register
-                    </button>
-                </div>
-
-                <div class="pt-3 border-t border-[#E2E8F0] flex justify-between text-xs text-[#64748B] font-medium">
-                    <span>Loaded Bills: <strong id="erpCount" class="text-[#0F172A] font-mono">0</strong></span>
-                    <span>Total Books Tax: <strong id="erpTax" class="text-blue-600 font-mono">₹ 0.00</strong></span>
-                </div>
-            </div>
-
-            <!-- SOURCE 2 CARD: GST PORTAL -->
-            <div class="bg-white border border-[#E2E8F0] rounded-2xl p-6 shadow-sm space-y-4">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">Source 2 • GST Portal (gov.in)</span>
-                        <h2 class="text-sm font-bold mt-2 text-[#0F172A]">GSTR-2B Portal Connector</h2>
-                    </div>
-                    <span id="portalBadge" class="text-xs bg-[#F1F5F9] text-[#64748B] px-3 py-1 rounded-full border border-[#E2E8F0] font-medium">Not Connected</span>
-                </div>
-
-                <div class="relative grid grid-cols-3 bg-[#F8FAFC] p-1.5 rounded-xl border border-[#E2E8F0] text-xs font-semibold text-[#475569]">
-                    <div id="portalSlider" class="absolute top-1.5 bottom-1.5 left-1.5 w-[calc(33.33%-4px)] bg-emerald-600 rounded-lg shadow-sm transition-all duration-300"></div>
-                    <button onclick="switchPortalTab('api')" id="portalTab_api" class="relative z-10 py-1.5 rounded-lg text-white text-center">⚡ Portal API</button>
-                    <button onclick="switchPortalTab('upload')" id="portalTab_upload" class="relative z-10 py-1.5 rounded-lg hover:text-[#0F172A] text-center">📂 Upload 2B</button>
-                    <button onclick="switchPortalTab('sample')" id="portalTab_sample" class="relative z-10 py-1.5 rounded-lg hover:text-[#0F172A] text-center">🧪 Sample</button>
-                </div>
-
-                <div id="portalPane_api" class="space-y-3 text-xs">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                        <input id="portalUsername" type="text" placeholder="GST Username" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-emerald-600" />
-                        <input id="portalPassword" type="password" placeholder="Password" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-emerald-600" />
-                        <input id="portalPeriod" type="text" value="102026" placeholder="MMYYYY" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-emerald-600 font-mono" />
-                    </div>
-                    <button onclick="fetchPortalLive()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl transition">
-                        ⚡ Fetch GSTR-2B Directly from Portal
-                    </button>
-                </div>
-
-                <div id="portalPane_upload" class="hidden space-y-3 text-xs">
-                    <input type="file" id="portalFileInput" accept=".json,.xlsx,.xls,.csv" class="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-2.5 text-[#475569] file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 cursor-pointer" />
-                    <button onclick="uploadPortalFile()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl transition">
-                        📤 Upload Official GSTR-2B JSON
-                    </button>
-                </div>
-
-                <div id="portalPane_sample" class="hidden space-y-3 text-xs">
-                    <p class="text-[#64748B]">Load 6 standard sample GSTR-2B portal invoices.</p>
-                    <button onclick="loadPortalSample()" class="w-full bg-[#F1F5F9] hover:bg-[#E2E8F0] border border-[#E2E8F0] text-[#0F172A] font-semibold py-2.5 rounded-xl transition">
-                        🧪 Load Sample GSTR-2B Data
-                    </button>
-                </div>
-
-                <div class="pt-3 border-t border-[#E2E8F0] flex justify-between text-xs text-[#64748B] font-medium">
-                    <span>Loaded 2B Bills: <strong id="portalCount" class="text-[#0F172A] font-mono">0</strong></span>
-                    <span>Total 2B Tax: <strong id="portalTax" class="text-emerald-600 font-mono">₹ 0.00</strong></span>
-                </div>
-            </div>
-        </div>
-
-        <!-- STATUS SUMMARY CARDS -->
-        <div id="statusGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4"></div>
-
-        <!-- ACTION TOOLBAR -->
-        <div class="bg-white border border-[#E2E8F0] rounded-2xl p-4 flex flex-wrap justify-between items-center gap-4 shadow-sm">
-            <div class="flex flex-wrap items-center gap-3 flex-1 min-w-[300px]">
-                <div class="bg-[#F8FAFC] p-1.5 rounded-xl border border-[#E2E8F0] flex text-xs font-semibold text-[#475569]">
-                    <button onclick="setViewMode('bills')" id="viewBtn_bills" class="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white shadow-sm transition">📄 Bill-wise</button>
-                    <button onclick="setViewMode('parties')" id="viewBtn_parties" class="px-3.5 py-1.5 rounded-lg hover:text-[#0F172A] transition">🏢 Party-wise</button>
-                </div>
-
-                <div class="relative flex-1 min-w-[240px]">
-                    <input id="searchBox" oninput="renderActiveView()" type="text" placeholder="🔍 Search GSTIN, Supplier, Inv No..." class="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3.5 py-2 text-xs text-[#0F172A] focus:outline-none focus:border-blue-600" />
-                </div>
-
-                <div class="flex items-center gap-2 text-xs bg-[#F8FAFC] border border-[#E2E8F0] px-3 py-2 rounded-xl text-[#475569]">
-                    <span>±₹</span>
-                    <input id="tolInput" type="number" value="2" step="1" onchange="reRunWithTolerance()" class="w-10 bg-transparent text-[#0F172A] font-bold font-mono text-center focus:outline-none" />
-                </div>
-            </div>
-
-            <div class="flex items-center gap-2 text-xs font-semibold">
-                <button onclick="exportFile('xlsx')" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 px-3.5 py-2 rounded-xl transition flex items-center gap-1.5">
-                    <span>📊</span> <span>Export Excel</span>
-                </button>
-                <button onclick="exportFile('csv')" class="bg-white hover:bg-[#F1F5F9] text-[#475569] border border-[#E2E8F0] px-3 py-2 rounded-xl transition">CSV</button>
-                <button onclick="exportFile('json')" class="bg-white hover:bg-[#F1F5F9] text-[#475569] border border-[#E2E8F0] px-3 py-2 rounded-xl transition">JSON</button>
-            </div>
-        </div>
-
-        <!-- DATA TABLE CONTAINER -->
-        <div class="bg-white border border-[#E2E8F0] rounded-2xl overflow-hidden shadow-sm">
-            <div id="billsTableWrap" class="overflow-x-auto">
-                <table class="w-full text-left text-xs">
-                    <thead class="bg-[#F8FAFC] text-[#475569] uppercase tracking-wider font-semibold border-b border-[#E2E8F0]">
-                        <tr>
-                            <th class="p-3.5">GSTIN</th>
-                            <th class="p-3.5">Supplier Name</th>
-                            <th class="p-3.5">ERP Inv No</th>
-                            <th class="p-3.5">2B Inv No</th>
-                            <th class="p-3.5">Date</th>
-                            <th class="p-3.5 text-right">ERP Tax (₹)</th>
-                            <th class="p-3.5 text-right">2B Tax (₹)</th>
-                            <th class="p-3.5 text-right">Diff (₹)</th>
-                            <th class="p-3.5">Status</th>
-                            <th class="p-3.5">Matching Pass</th>
-                            <th class="p-3.5">Suggested Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="billsTbody" class="divide-y divide-[#E2E8F0]"></tbody>
-                </table>
-            </div>
-
-            <div id="partiesTableWrap" class="hidden overflow-x-auto">
-                <table class="w-full text-left text-xs">
-                    <thead class="bg-[#F8FAFC] text-[#475569] uppercase tracking-wider font-semibold border-b border-[#E2E8F0]">
-                        <tr>
-                            <th class="p-3.5">Supplier GSTIN</th>
-                            <th class="p-4">Supplier Legal / Trade Name</th>
-                            <th class="p-3.5 text-center">Total Invoices</th>
-                            <th class="p-3.5 text-right">Total ERP Tax (₹)</th>
-                            <th class="p-3.5 text-right">Total Portal 2B Tax (₹)</th>
-                            <th class="p-3.5 text-right">Net Tax Difference (₹)</th>
-                            <th class="p-3.5">Party Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="partiesTbody" class="divide-y divide-[#E2E8F0]"></tbody>
-                </table>
-            </div>
-        </div>
-    </main>
+    </div>
 
     <!-- VAULT HISTORY MODAL -->
     <div id="vaultModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">

@@ -158,3 +158,60 @@ def run_matching_engine(erp_df: pd.DataFrame, portal_df: pd.DataFrame, tolerance
             })
 
     return pd.DataFrame(results)
+
+class PurchaseRegisterEngine:
+    def __init__(self, raw_vouchers):
+        self.raw_vouchers = raw_vouchers
+        self.blocked_keywords = [
+            "motor vehicle", "car", "food", "beverages", "club", 
+            "membership", "health insurance", "construction", "repair of building"
+        ]
+
+    def process_purchase_register(self):
+        processed_records = []
+        for voucher in self.raw_vouchers:
+            invoice_no = voucher.get("invoice_no", "UNKNOWN")
+            date = voucher.get("date", "")
+            party_name = voucher.get("party_name", "")
+            gstin = voucher.get("gstin", "")
+            taxable_value = float(voucher.get("taxable_value", 0.0))
+            cgst = float(voucher.get("cgst", 0.0))
+            sgst = float(voucher.get("sgst", 0.0))
+            igst = float(voucher.get("igst", 0.0))
+            total_tax = cgst + sgst + igst
+            item_description = voucher.get("item_description", "").lower()
+            is_rcm = voucher.get("is_rcm", False)
+
+            itc_status = "Eligible ITC"
+            for keyword in self.blocked_keywords:
+                if keyword in item_description:
+                    itc_status = "Ineligible / Blocked ITC (Sec 17(5))"
+                    break
+
+            if is_rcm:
+                itc_status = "RCM Liability / Eligible Post Payment"
+
+            processed_records.append({
+                "invoice_no": invoice_no,
+                "date": date,
+                "party_name": party_name,
+                "gstin": gstin,
+                "taxable_value": taxable_value,
+                "total_tax": total_tax,
+                "itc_status": itc_status,
+                "is_rcm": is_rcm
+            })
+        return processed_records
+
+    def generate_summary(self, processed_records):
+        total_invoices = len(processed_records)
+        total_taxable = sum(r["taxable_value"] for r in processed_records)
+        eligible_itc_sum = sum(r["total_tax"] for r in processed_records if "Eligible" in r["itc_status"])
+        blocked_itc_sum = sum(r["total_tax"] for r in processed_records if "Blocked" in r["itc_status"])
+
+        return {
+            "total_invoices": total_invoices,
+            "total_taxable_value": total_taxable,
+            "eligible_itc": eligible_itc_sum,
+            "blocked_itc": blocked_itc_sum
+        }

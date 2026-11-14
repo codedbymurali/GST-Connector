@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from config_and_samples import standardize_columns
 
 def sanitizeTallyXml(rawXml: str) -> str:
-    """Strips illegal control characters and fixes unescaped ampersands from Tally XML responses[cite: 7]."""
+    """Strips illegal control characters and fixes unescaped ampersands from Tally XML responses."""
     if not rawXml:
         return ""
     cleaned = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]', '', rawXml)
@@ -16,7 +16,7 @@ def sanitizeTallyXml(rawXml: str) -> str:
     return cleaned
 
 def discover_tally_port() -> int:
-    """Scans local ports 9000 to 9015 to find an active Tally Prime instance[cite: 7]."""
+    """Scans local ports 9000 to 9015 to find an active Tally Prime instance."""
     for port in range(9000, 9016):
         try:
             url = f"http://127.0.0.1:{port}"
@@ -29,7 +29,7 @@ def discover_tally_port() -> int:
     return 9000  # Default fallback port
 
 def fetch_tally_vouchers_chunked(from_date: str, to_date: str) -> pd.DataFrame:
-    """Fetches vouchers in monthly chunks to prevent Tally from freezing[cite: 7]."""
+    """Fetches vouchers in monthly chunks to prevent Tally from freezing."""
     port = discover_tally_port()
     base_url = f"http://127.0.0.1:{port}"
     
@@ -82,7 +82,7 @@ def fetch_tally_vouchers_chunked(from_date: str, to_date: str) -> pd.DataFrame:
                         "Doc_Type": "INV"
                     })
         except Exception:
-            pass # Fallback handled gracefully if Tally is offline
+            pass
         
         curr_start = curr_end + timedelta(days=1)
         

@@ -1,6 +1,5 @@
 import io
 import smtplib
-import traceback
 from pathlib import Path
 import pandas as pd
 from email.mime.text import MIMEText
@@ -8,16 +7,16 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
 
-from fastapi import FastAPI, UploadFile, File, Body
+from fastapi import FastAPI, UploadFile, File, Body, Request
 from fastapi.responses import HTMLResponse, StreamingResponse, JSONResponse
 import uvicorn
 
 from config_and_samples import get_sample_erp_df, get_sample_portal_df
 from connectors import parse_uploaded_file, fetch_erpnext_invoices
-from engine import run_matching_engine
+from modules.purchase_register import run_matching_engine, PurchaseRegisterEngine
 from database import init_db, save_reconciliation, get_all_history, get_reconciliation_by_id
 
-app = FastAPI(title="GST Recon Pro — V2 Database & Email Hub")
+app = FastAPI(title="CA GST Suite Pro — Professional Tax Workstation")
 
 # Initialize Database on Startup
 init_db()
@@ -152,7 +151,6 @@ async def email_report(payload: dict = Body(...)):
             "portal_tax": float(reco_df["Portal_Tax"].sum()) if "Portal_Tax" in reco_df.columns else 0.0
         }
 
-        # Build Email
         msg = MIMEMultipart()
         msg['From'] = sender_email
         msg['To'] = receiver
@@ -164,7 +162,7 @@ async def email_report(payload: dict = Body(...)):
             <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;">
                 <h2 style="color: #4f46e5; margin-top: 0;">GST Reconciliation Summary</h2>
                 <p>Hello,</p>
-                <p>Here is the automated reconciliation report for <strong>{batch_name}</strong> generated via GST Suite Pro.</p>
+                <p>Here is the automated reconciliation report for <strong>{batch_name}</strong> generated via CA GST Suite Pro.</p>
                 
                 <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
                     <tr style="background-color: #f8fafc;">
@@ -185,14 +183,13 @@ async def email_report(payload: dict = Body(...)):
                     </tr>
                 </table>
                 
-                <p style="font-size: 12px; color: #64748b; margin-top: 30px;">Generated automatically by GST Recon Pro Hub.</p>
+                <p style="font-size: 12px; color: #64748b; margin-top: 30px;">Generated automatically by CA GST Suite Pro.</p>
             </div>
         </body>
         </html>
         """
         msg.attach(MIMEText(html_content, 'html'))
 
-        # Attach Excel
         buf = io.BytesIO()
         with pd.ExcelWriter(buf, engine="openpyxl") as writer:
             reco_df.to_excel(writer, sheet_name="Recon_Report", index=False)
@@ -204,7 +201,6 @@ async def email_report(payload: dict = Body(...)):
         part.add_header('Content-Disposition', f'attachment; filename="GST_Recon_{batch_name}.xlsx"')
         msg.attach(part)
 
-        # Send Email via Gmail SMTP
         server = smtplib.SMTP("smtp.gmail.com", 587)
         server.starttls()
         server.login(sender_email, sender_password)
@@ -230,7 +226,10 @@ async def export_data(status: str = "ALL", fmt: str = "xlsx"):
     df = SESSION_STORE["reconciled_df"]
     if df.empty:
         return JSONResponse({"error": "No reconciled data available to export."}, status_code=400)
-    if status != "ALL":
+    
+    if status == "ALL":
+        df = df[df["Status"] != "Matched"]
+    elif status != "ALL":
         df = df[df["Status"] == status]
 
     if fmt == "csv":
@@ -252,6 +251,44 @@ async def serve_ui():
     if html_path.exists():
         return html_path.read_text(encoding="utf-8")
     return "<h1>Error: templates/index.html file not found!</h1>"
+
+@app.get("/purchase-recon")
+async def purchase_reconciliation(request: Request):
+    sample_purchases = [
+        {
+            "invoice_no": "INV-2026-001",
+            "date": "2026-11-01",
+            "party_name": "ABC Enterprises",
+            "gstin": "37AAAAA0000A1Z5",
+            "taxable_value": 50000.0,
+            "cgst": 4500.0,
+            "sgst": 4500.0,
+            "igst": 0.0,
+            "item_description": "Office laptop accessories",
+            "is_rcm": False
+        },
+        {
+            "invoice_no": "INV-2026-002",
+            "date": "2026-11-03",
+            "party_name": "XYZ Motors",
+            "gstin": "37BBBBB1111B1Z6",
+            "taxable_value": 100000.0,
+            "cgst": 9000.0,
+            "sgst": 9000.0,
+            "igst": 0.0,
+            "item_description": "Car repair and maintenance services",
+            "is_rcm": False
+        }
+    ]
+    engine = PurchaseRegisterEngine(sample_purchases)
+    processed_data = engine.process_purchase_register()
+    summary_metrics = engine.generate_summary(processed_data)
+    return {
+        "status": "success",
+        "module": "Purchase Reconciliation & ITC Eligibility (Module 2)",
+        "summary": summary_metrics,
+        "records": processed_data
+    }
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
