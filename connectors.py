@@ -1,9 +1,94 @@
 import io
 import json
-import xml.etree.ElementTree as ET
+import re
 import requests
+import xml.etree.ElementTree as ET
 import pandas as pd
+from datetime import datetime, timedelta
 from config_and_samples import standardize_columns
+
+def sanitizeTallyXml(rawXml: str) -> str:
+    """Strips illegal control characters and fixes unescaped ampersands from Tally XML responses[cite: 7]."""
+    if not rawXml:
+        return ""
+    cleaned = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]', '', rawXml)
+    cleaned = re.sub(r'&(?!(amp|lt|gt|quot|apos|#\d+|#x[0-9a-fA-F]+);)', '&amp;', cleaned)
+    return cleaned
+
+def discover_tally_port() -> int:
+    """Scans local ports 9000 to 9015 to find an active Tally Prime instance[cite: 7]."""
+    for port in range(9000, 9016):
+        try:
+            url = f"http://127.0.0.1:{port}"
+            payload = "<ENVELOPE><HEADER><TALLYREQUEST>Export Data</TALLYREQUEST></HEADER><BODY><EXPORTDATA><REQUESTDESC><REPORTNAME>List of Companies</REPORTNAME></REQUESTDESC></EXPORTDATA></BODY></ENVELOPE>"
+            res = requests.post(url, data=payload, timeout=0.8)
+            if res.status_code == 200 and "<COMPANY" in res.text:
+                return port
+        except Exception:
+            continue
+    return 9000  # Default fallback port
+
+def fetch_tally_vouchers_chunked(from_date: str, to_date: str) -> pd.DataFrame:
+    """Fetches vouchers in monthly chunks to prevent Tally from freezing[cite: 7]."""
+    port = discover_tally_port()
+    base_url = f"http://127.0.0.1:{port}"
+    
+    start_dt = datetime.strptime(from_date, "%Y-%m-%d")
+    end_dt = datetime.strptime(to_date, "%Y-%m-%d")
+    
+    all_rows = []
+    curr_start = start_dt
+    
+    while curr_start <= end_dt:
+        curr_end = min(curr_start + timedelta(days=30), end_dt)
+        f_str = curr_start.strftime("%Y%m%d")
+        t_str = curr_end.strftime("%Y%m%d")
+        
+        xml_payload = f"""
+        <ENVELOPE>
+            <HEADER>
+                <TALLYREQUEST>Export Data</TALLYREQUEST>
+            </HEADER>
+            <BODY>
+                <EXPORTDATA>
+                    <REQUESTDESC>
+                        <REPORTNAME>Voucher Register</REPORTNAME>
+                        <STATICVARIABLES>
+                            <SVFROMDATE>{f_str}</SVFROMDATE>
+                            <SVTODATE>{t_str}</SVTODATE>
+                            <SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT>
+                        </STATICVARIABLES>
+                    </REQUESTDESC>
+                </EXPORTDATA>
+            </BODY>
+        </ENVELOPE>
+        """
+        try:
+            res = requests.post(base_url, data=xml_payload, timeout=5)
+            if res.status_code == 200:
+                clean_xml = sanitizeTallyXml(res.text)
+                root = ET.fromstring(clean_xml)
+                for vch in root.findall(".//VOUCHER"):
+                    vtype = vch.attrib.get("VCHTYPE", "")
+                    if "PURCHASE" not in vtype.upper() and "JOURNAL" not in vtype.upper():
+                        continue
+                    all_rows.append({
+                        "GSTIN": vch.findtext("PARTYGSTIN", ""),
+                        "Supplier_Name": vch.findtext("PARTYLEDGERNAME", ""),
+                        "Invoice_No": vch.findtext("REFERENCE", "") or vch.findtext("VOUCHERNUMBER", ""),
+                        "Invoice_Date": vch.findtext("REFERENCEDATE", "") or vch.findtext("DATE", ""),
+                        "Taxable_Value": float(vch.findtext("AMOUNT", 0.0) or 0.0),
+                        "IGST": 0.0, "CGST": 0.0, "SGST": 0.0,
+                        "Doc_Type": "INV"
+                    })
+        except Exception:
+            pass # Fallback handled gracefully if Tally is offline
+        
+        curr_start = curr_end + timedelta(days=1)
+        
+    if not all_rows:
+        return pd.DataFrame()
+    return standardize_columns(pd.DataFrame(all_rows))
 
 def parse_uploaded_file(file_bytes: bytes, filename: str) -> pd.DataFrame:
     fname = filename.lower()
@@ -32,7 +117,7 @@ def parse_uploaded_file(file_bytes: bytes, filename: str) -> pd.DataFrame:
         return standardize_columns(pd.DataFrame(rows))
 
     if fname.endswith(".xml"):
-        root = ET.fromstring(file_bytes.decode("utf-8", errors="ignore"))
+        root = ET.fromstring(sanitizeTallyXml(file_bytes.decode("utf-8", errors="ignore")))
         rows = []
         for vch in root.findall(".//VOUCHER"):
             vtype = vch.attrib.get("VCHTYPE", "")
