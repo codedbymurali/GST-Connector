@@ -2,144 +2,143 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>GST Recon Suite Pro — V2 Database Vault Hub</title>
+    <title>CA GST Suite Pro — Professional Tax Workstation</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-indigo-500 selection:text-white">
-    <!-- TOP NAVBAR -->
-    <header class="border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md sticky top-0 z-30 shadow-2xl shadow-indigo-950/20">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap justify-between items-center gap-4">
+<body class="bg-[#F8FAFC] text-[#0F172A] min-h-screen selection:bg-blue-600 selection:text-white">
+    <!-- TOP TELEMETRY NAVBAR -->
+    <header class="border-b border-[#E2E8F0] bg-white sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 py-3.5 flex flex-wrap justify-between items-center gap-4">
             <div class="flex items-center gap-3.5">
-                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center font-black text-xl shadow-lg shadow-indigo-600/40 text-white transform hover:rotate-6 transition duration-300">G</div>
+                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-bold text-lg text-white shadow-md shadow-blue-500/20">CA</div>
                 <div>
-                    <div class="flex items-center gap-2.5">
-                        <h1 class="text-lg font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">GST Suite Pro</h1>
-                        <span class="text-[10px] uppercase tracking-wider bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2.5 py-0.5 rounded-full font-bold">V2 Database Vault</span>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-base font-bold tracking-tight text-[#0F172A]">CA GST Suite Pro</h1>
+                        <span class="text-[10px] uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-0.5 rounded-full font-bold">Enterprise Desk</span>
                     </div>
-                    <p class="text-xs text-slate-400 font-medium">Persistent SQLite Storage + Smart Multi-Month Reconciliation Vault</p>
+                    <p class="text-xs text-[#64748B] font-medium">Live Tally Prime Connector & GSTR-2B Forensic Reconciliation</p>
                 </div>
             </div>
 
-            <div class="flex items-center gap-3 text-xs">
-                <button onclick="openVaultModal()" class="bg-slate-900 hover:bg-slate-800 text-indigo-300 hover:text-white font-bold px-4 py-2.5 rounded-xl border border-indigo-500/30 shadow-lg shadow-indigo-600/10 transition-all duration-200 flex items-center gap-1.5">
+            <div class="flex items-center gap-2.5 text-xs">
+                <button onclick="openVaultModal()" class="bg-white hover:bg-[#F1F5F9] text-[#475569] font-semibold px-3.5 py-2 rounded-xl border border-[#E2E8F0] shadow-sm transition flex items-center gap-1.5">
                     <span>📂</span> <span>Vault History</span>
                 </button>
-                <button onclick="saveCurrentToVault()" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold px-4 py-2.5 rounded-xl shadow-lg shadow-purple-600/25 transition-all duration-200 flex items-center gap-1.5">
+                <button onclick="saveCurrentToVault()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-xl shadow-sm transition flex items-center gap-1.5">
                     <span>💾</span> <span>Save to Vault</span>
                 </button>
-                <button onclick="quickDemoBoth()" class="group bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-600/25 transition-all duration-200 flex items-center gap-2">
-                    <span>⚡ 1-Click Load Sample</span>
+                <button onclick="quickDemoBoth()" class="bg-[#0F172A] hover:bg-slate-800 text-white font-semibold px-4 py-2 rounded-xl shadow-sm transition flex items-center gap-1.5">
+                    <span>⚡ Load Sample Data</span>
                 </button>
-                <button onclick="resetAll()" class="bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white px-3.5 py-2.5 rounded-xl border border-slate-800 transition-all duration-200">
+                <button onclick="resetAll()" class="bg-white hover:bg-[#FEF2F2] text-[#991B1B] font-semibold px-3 py-2 rounded-xl border border-[#E2E8F0] transition">
                     🗑 Reset
                 </button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-8 space-y-8">
+    <main class="max-w-7xl mx-auto px-6 py-8 space-y-6">
         <!-- DUAL CONNECTOR HUB -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- SOURCE 1 CARD: ERP / BOOKS -->
-            <div class="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-3xl p-6 shadow-2xl shadow-black/40 space-y-5 hover:border-slate-700 transition-all duration-300">
+            <div class="bg-white border border-[#E2E8F0] rounded-2xl p-6 shadow-sm space-y-4">
                 <div class="flex justify-between items-start">
                     <div>
-                        <span class="text-[10px] font-black uppercase tracking-widest text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md border border-blue-500/20">Source 1 • Books / ERP</span>
-                        <h2 class="text-base font-bold mt-2 text-white">Purchase Register Connector</h2>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200">Source 1 • Books / Tally</span>
+                        <h2 class="text-sm font-bold mt-2 text-[#0F172A]">Purchase Register Connector</h2>
                     </div>
-                    <span id="erpBadge" class="text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700 font-medium">Not Connected</span>
+                    <span id="erpBadge" class="text-xs bg-[#F1F5F9] text-[#64748B] px-3 py-1 rounded-full border border-[#E2E8F0] font-medium">Not Connected</span>
                 </div>
 
-                <!-- Sliding Tabs -->
-                <div class="relative grid grid-cols-3 bg-slate-950 p-1.5 rounded-2xl border border-slate-800 text-xs font-bold">
-                    <div id="erpSlider" class="absolute top-1.5 bottom-1.5 left-1.5 w-[calc(33.33%-4px)] bg-blue-600 rounded-xl shadow-lg shadow-blue-600/30 transition-all duration-300 ease-in-out"></div>
-                    <button onclick="switchErpTab('api')" id="erpTab_api" class="relative z-10 py-2 rounded-xl text-white text-center">⚡ 1-Click ERP</button>
-                    <button onclick="switchErpTab('upload')" id="erpTab_upload" class="relative z-10 py-2 rounded-xl text-slate-400 hover:text-white text-center">📂 Upload</button>
-                    <button onclick="switchErpTab('sample')" id="erpTab_sample" class="relative z-10 py-2 rounded-xl text-slate-400 hover:text-white text-center">🧪 Sample</button>
+                <div class="relative grid grid-cols-3 bg-[#F8FAFC] p-1.5 rounded-xl border border-[#E2E8F0] text-xs font-semibold text-[#475569]">
+                    <div id="erpSlider" class="absolute top-1.5 bottom-1.5 left-1.5 w-[calc(33.33%-4px)] bg-blue-600 rounded-lg shadow-sm transition-all duration-300"></div>
+                    <button onclick="switchErpTab('api')" id="erpTab_api" class="relative z-10 py-1.5 rounded-lg text-white text-center">⚡ Tally API</button>
+                    <button onclick="switchErpTab('upload')" id="erpTab_upload" class="relative z-10 py-1.5 rounded-lg hover:text-[#0F172A] text-center">📂 Upload</button>
+                    <button onclick="switchErpTab('sample')" id="erpTab_sample" class="relative z-10 py-1.5 rounded-lg hover:text-[#0F172A] text-center">🧪 Sample</button>
                 </div>
 
-                <div id="erpPane_api" class="space-y-3.5 text-xs">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-                        <input id="erpUrl" type="text" placeholder="ERPNext URL (leave blank for instant demo)" class="md:col-span-3 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition" />
-                        <input id="erpKey" type="text" placeholder="API Key" class="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition" />
-                        <input id="erpSecret" type="password" placeholder="API Secret" class="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition" />
-                        <input id="erpMonth" type="month" value="2026-10" class="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition" />
+                <div id="erpPane_api" class="space-y-3 text-xs">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                        <input id="erpUrl" type="text" placeholder="Tally URL (localhost:9000)" class="md:col-span-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-blue-600 font-mono" />
+                        <input id="erpKey" type="text" placeholder="API Key" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-blue-600" />
+                        <input id="erpSecret" type="password" placeholder="API Secret" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-blue-600" />
+                        <input id="erpMonth" type="month" value="2026-10" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-blue-600 font-mono" />
                     </div>
-                    <button onclick="fetchErpLive()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-600/25 transition-all duration-200">
-                        ⚡ Fetch Purchase Invoices from ERPNext
+                    <button onclick="fetchErpLive()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl shadow-sm transition">
+                        ⚡ Fetch Vouchers from Tally Books
                     </button>
                 </div>
 
-                <div id="erpPane_upload" class="hidden space-y-3.5 text-xs">
-                    <input type="file" id="erpFileInput" accept=".xlsx,.xls,.csv,.xml" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-300 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 transition cursor-pointer" />
-                    <button onclick="uploadErpFile()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-600/25 transition-all duration-200">
-                        📤 Upload Books Excel / CSV / Tally XML
+                <div id="erpPane_upload" class="hidden space-y-3 text-xs">
+                    <input type="file" id="erpFileInput" accept=".xlsx,.xls,.csv,.xml" class="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-2.5 text-[#475569] file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 cursor-pointer" />
+                    <button onclick="uploadErpFile()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl transition">
+                        📤 Upload Purchase Register
                     </button>
                 </div>
 
-                <div id="erpPane_sample" class="hidden space-y-3.5 text-xs">
-                    <p class="text-slate-400">Load 6 realistic Purchase Invoices directly into memory.</p>
-                    <button onclick="loadErpSample()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold py-3 rounded-xl transition-all duration-200">
-                        🧪 Load Sample ERP Invoices Now
+                <div id="erpPane_sample" class="hidden space-y-3 text-xs">
+                    <p class="text-[#64748B]">Load 6 standard sample purchase invoices into memory.</p>
+                    <button onclick="loadErpSample()" class="w-full bg-[#F1F5F9] hover:bg-[#E2E8F0] border border-[#E2E8F0] text-[#0F172A] font-semibold py-2.5 rounded-xl transition">
+                        🧪 Load Sample Purchase Register
                     </button>
                 </div>
 
-                <div class="pt-4 border-t border-slate-800 flex justify-between text-xs text-slate-400 font-medium">
-                    <span>Loaded Bills: <strong id="erpCount" class="text-white font-bold">0</strong></span>
-                    <span>Total Input Tax: <strong id="erpTax" class="text-blue-400 font-bold">₹0</strong></span>
+                <div class="pt-3 border-t border-[#E2E8F0] flex justify-between text-xs text-[#64748B] font-medium">
+                    <span>Loaded Bills: <strong id="erpCount" class="text-[#0F172A] font-mono">0</strong></span>
+                    <span>Total Books Tax: <strong id="erpTax" class="text-blue-600 font-mono">₹ 0.00</strong></span>
                 </div>
             </div>
 
             <!-- SOURCE 2 CARD: GST PORTAL -->
-            <div class="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-3xl p-6 shadow-2xl shadow-black/40 space-y-5 hover:border-slate-700 transition-all duration-300">
+            <div class="bg-white border border-[#E2E8F0] rounded-2xl p-6 shadow-sm space-y-4">
                 <div class="flex justify-between items-start">
                     <div>
-                        <span class="text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">Source 2 • GST Portal (gov.in)</span>
-                        <h2 class="text-base font-bold mt-2 text-white">GSTR-2B / 2A Portal Connector</h2>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">Source 2 • GST Portal (gov.in)</span>
+                        <h2 class="text-sm font-bold mt-2 text-[#0F172A]">GSTR-2B Portal Connector</h2>
                     </div>
-                    <span id="portalBadge" class="text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700 font-medium">Not Connected</span>
+                    <span id="portalBadge" class="text-xs bg-[#F1F5F9] text-[#64748B] px-3 py-1 rounded-full border border-[#E2E8F0] font-medium">Not Connected</span>
                 </div>
 
-                <!-- Sliding Tabs -->
-                <div class="relative grid grid-cols-3 bg-slate-950 p-1.5 rounded-2xl border border-slate-800 text-xs font-bold">
-                    <div id="portalSlider" class="absolute top-1.5 bottom-1.5 left-1.5 w-[calc(33.33%-4px)] bg-emerald-600 rounded-xl shadow-lg shadow-emerald-600/30 transition-all duration-300 ease-in-out"></div>
-                    <button onclick="switchPortalTab('api')" id="portalTab_api" class="relative z-10 py-2 rounded-xl text-white text-center">⚡ Portal API</button>
-                    <button onclick="switchPortalTab('upload')" id="portalTab_upload" class="relative z-10 py-2 rounded-xl text-slate-400 hover:text-white text-center">📂 Upload 2B</button>
-                    <button onclick="switchPortalTab('sample')" id="portalTab_sample" class="relative z-10 py-2 rounded-xl text-slate-400 hover:text-white text-center">🧪 Sample 2B</button>
+                <div class="relative grid grid-cols-3 bg-[#F8FAFC] p-1.5 rounded-xl border border-[#E2E8F0] text-xs font-semibold text-[#475569]">
+                    <div id="portalSlider" class="absolute top-1.5 bottom-1.5 left-1.5 w-[calc(33.33%-4px)] bg-emerald-600 rounded-lg shadow-sm transition-all duration-300"></div>
+                    <button onclick="switchPortalTab('api')" id="portalTab_api" class="relative z-10 py-1.5 rounded-lg text-white text-center">⚡ Portal API</button>
+                    <button onclick="switchPortalTab('upload')" id="portalTab_upload" class="relative z-10 py-1.5 rounded-lg hover:text-[#0F172A] text-center">📂 Upload 2B</button>
+                    <button onclick="switchPortalTab('sample')" id="portalTab_sample" class="relative z-10 py-1.5 rounded-lg hover:text-[#0F172A] text-center">🧪 Sample</button>
                 </div>
 
-                <div id="portalPane_api" class="space-y-3.5 text-xs">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-                        <input id="portalUsername" type="text" placeholder="Enter GST Username *" class="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-emerald-500 transition" />
-                        <input id="portalPassword" type="password" placeholder="Enter GST Password *" class="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-emerald-500 transition" />
-                        <input id="portalPeriod" type="text" value="102026" placeholder="Period (MMYYYY)" class="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-slate-200 font-mono focus:outline-none focus:border-emerald-500 transition" />
+                <div id="portalPane_api" class="space-y-3 text-xs">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                        <input id="portalUsername" type="text" placeholder="GST Username" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-emerald-600" />
+                        <input id="portalPassword" type="password" placeholder="Password" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-emerald-600" />
+                        <input id="portalPeriod" type="text" value="102026" placeholder="MMYYYY" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-emerald-600 font-mono" />
                     </div>
-                    <button onclick="fetchPortalLive()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl shadow-lg shadow-emerald-600/25 transition-all duration-200">
-                        ⚡ Login & Fetch GSTR-2B Directly from Portal
+                    <button onclick="fetchPortalLive()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl transition">
+                        ⚡ Fetch GSTR-2B Directly from Portal
                     </button>
                 </div>
 
-                <div id="portalPane_upload" class="hidden space-y-3.5 text-xs">
-                    <input type="file" id="portalFileInput" accept=".json,.xlsx,.xls,.csv" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-300 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-500 transition cursor-pointer" />
-                    <button onclick="uploadPortalFile()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl shadow-lg shadow-emerald-600/25 transition-all duration-200">
-                        📤 Upload Official GSTR-2B JSON / Excel
+                <div id="portalPane_upload" class="hidden space-y-3 text-xs">
+                    <input type="file" id="portalFileInput" accept=".json,.xlsx,.xls,.csv" class="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-2.5 text-[#475569] file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 cursor-pointer" />
+                    <button onclick="uploadPortalFile()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl transition">
+                        📤 Upload Official GSTR-2B JSON
                     </button>
                 </div>
 
-                <div id="portalPane_sample" class="hidden space-y-3.5 text-xs">
-                    <p class="text-slate-400">Load 6 realistic GSTR-2B Portal Invoices directly into memory.</p>
-                    <button onclick="loadPortalSample()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold py-3 rounded-xl transition-all duration-200">
-                        🧪 Load Sample GSTR-2B Data Now
+                <div id="portalPane_sample" class="hidden space-y-3 text-xs">
+                    <p class="text-[#64748B]">Load 6 standard sample GSTR-2B portal invoices.</p>
+                    <button onclick="loadPortalSample()" class="w-full bg-[#F1F5F9] hover:bg-[#E2E8F0] border border-[#E2E8F0] text-[#0F172A] font-semibold py-2.5 rounded-xl transition">
+                        🧪 Load Sample GSTR-2B Data
                     </button>
                 </div>
 
-                <div class="pt-4 border-t border-slate-800 flex justify-between text-xs text-slate-400 font-medium">
-                    <span>Loaded 2B Bills: <strong id="portalCount" class="text-white font-bold">0</strong></span>
-                    <span>Total 2B Tax: <strong id="portalTax" class="text-emerald-400 font-bold">₹0</strong></span>
+                <div class="pt-3 border-t border-[#E2E8F0] flex justify-between text-xs text-[#64748B] font-medium">
+                    <span>Loaded 2B Bills: <strong id="portalCount" class="text-[#0F172A] font-mono">0</strong></span>
+                    <span>Total 2B Tax: <strong id="portalTax" class="text-emerald-600 font-mono">₹ 0.00</strong></span>
                 </div>
             </div>
         </div>
@@ -148,90 +147,86 @@
         <div id="statusGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4"></div>
 
         <!-- ACTION TOOLBAR -->
-        <div class="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-3xl p-5 flex flex-wrap justify-between items-center gap-4 shadow-xl">
-            <div class="flex flex-wrap items-center gap-3.5 flex-1 min-w-[300px]">
-                <div class="bg-slate-950 p-1.5 rounded-2xl border border-slate-800 flex text-xs font-bold">
-                    <button onclick="setViewMode('bills')" id="viewBtn_bills" class="px-3.5 py-2 rounded-xl bg-indigo-600 text-white shadow-md shadow-indigo-600/30 transition-all duration-200">📄 Bill-wise</button>
-                    <button onclick="setViewMode('parties')" id="viewBtn_parties" class="px-3.5 py-2 rounded-xl text-slate-400 hover:text-white transition-all duration-200">🏢 Party-wise</button>
+        <div class="bg-white border border-[#E2E8F0] rounded-2xl p-4 flex flex-wrap justify-between items-center gap-4 shadow-sm">
+            <div class="flex flex-wrap items-center gap-3 flex-1 min-w-[300px]">
+                <div class="bg-[#F8FAFC] p-1.5 rounded-xl border border-[#E2E8F0] flex text-xs font-semibold text-[#475569]">
+                    <button onclick="setViewMode('bills')" id="viewBtn_bills" class="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white shadow-sm transition">📄 Bill-wise</button>
+                    <button onclick="setViewMode('parties')" id="viewBtn_parties" class="px-3.5 py-1.5 rounded-lg hover:text-[#0F172A] transition">🏢 Party-wise</button>
                 </div>
 
                 <div class="relative flex-1 min-w-[240px]">
-                    <input id="searchBox" oninput="renderActiveView()" type="text" placeholder="🔍 Search GSTIN, Supplier, Inv No..." class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-4 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 transition" />
+                    <input id="searchBox" oninput="renderActiveView()" type="text" placeholder="🔍 Search GSTIN, Supplier, Inv No..." class="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3.5 py-2 text-xs text-[#0F172A] focus:outline-none focus:border-blue-600" />
                 </div>
 
-                <div class="flex items-center gap-2 text-xs bg-slate-950 border border-slate-800 px-3.5 py-2 rounded-2xl">
-                    <span class="text-slate-400 font-medium">±₹</span>
-                    <input id="tolInput" type="number" value="2" step="1" onchange="reRunWithTolerance()" class="w-10 bg-transparent text-white font-black text-center focus:outline-none" />
+                <div class="flex items-center gap-2 text-xs bg-[#F8FAFC] border border-[#E2E8F0] px-3 py-2 rounded-xl text-[#475569]">
+                    <span>±₹</span>
+                    <input id="tolInput" type="number" value="2" step="1" onchange="reRunWithTolerance()" class="w-10 bg-transparent text-[#0F172A] font-bold font-mono text-center focus:outline-none" />
                 </div>
             </div>
 
-            <div class="flex items-center gap-2.5 text-xs font-bold">
-                <button onclick="exportFile('xlsx')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-600/20 transition-all duration-200 flex items-center gap-1.5">
+            <div class="flex items-center gap-2 text-xs font-semibold">
+                <button onclick="exportFile('xlsx')" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 px-3.5 py-2 rounded-xl transition flex items-center gap-1.5">
                     <span>📊</span> <span>Export Excel</span>
                 </button>
-                <button onclick="exportFile('csv')" class="bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white px-3.5 py-2.5 rounded-xl transition-all duration-200 flex items-center gap-1">
-                    <span>📄</span> <span>CSV</span>
-                </button>
-                <button onclick="exportFile('json')" class="bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white px-3.5 py-2.5 rounded-xl transition-all duration-200 flex items-center gap-1">
-                    <span>🧩</span> <span>JSON</span>
-                </button>
+                <button onclick="exportFile('csv')" class="bg-white hover:bg-[#F1F5F9] text-[#475569] border border-[#E2E8F0] px-3 py-2 rounded-xl transition">CSV</button>
+                <button onclick="exportFile('json')" class="bg-white hover:bg-[#F1F5F9] text-[#475569] border border-[#E2E8F0] px-3 py-2 rounded-xl transition">JSON</button>
             </div>
         </div>
 
-        <!-- DATA TABLE -->
-        <div class="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+        <!-- DATA TABLE CONTAINER -->
+        <div class="bg-white border border-[#E2E8F0] rounded-2xl overflow-hidden shadow-sm">
             <div id="billsTableWrap" class="overflow-x-auto">
                 <table class="w-full text-left text-xs">
-                    <thead class="bg-slate-950 text-slate-400 uppercase tracking-wider font-bold border-b border-slate-800">
+                    <thead class="bg-[#F8FAFC] text-[#475569] uppercase tracking-wider font-semibold border-b border-[#E2E8F0]">
                         <tr>
-                            <th class="p-4">GSTIN</th>
-                            <th class="p-4">Supplier Name</th>
-                            <th class="p-4">ERP Inv No</th>
-                            <th class="p-4">2B Inv No</th>
-                            <th class="p-4">Date</th>
-                            <th class="p-4 text-right">ERP Tax (₹)</th>
-                            <th class="p-4 text-right">2B Tax (₹)</th>
-                            <th class="p-4 text-right">Diff (₹)</th>
-                            <th class="p-4">Status</th>
-                            <th class="p-4">Matching Pass</th>
-                            <th class="p-4">Suggested Action</th>
+                            <th class="p-3.5">GSTIN</th>
+                            <th class="p-3.5">Supplier Name</th>
+                            <th class="p-3.5">ERP Inv No</th>
+                            <th class="p-3.5">2B Inv No</th>
+                            <th class="p-3.5">Date</th>
+                            <th class="p-3.5 text-right">ERP Tax (₹)</th>
+                            <th class="p-3.5 text-right">2B Tax (₹)</th>
+                            <th class="p-3.5 text-right">Diff (₹)</th>
+                            <th class="p-3.5">Status</th>
+                            <th class="p-3.5">Matching Pass</th>
+                            <th class="p-3.5">Suggested Action</th>
                         </tr>
                     </thead>
-                    <tbody id="billsTbody" class="divide-y divide-slate-800/60"></tbody>
+                    <tbody id="billsTbody" class="divide-y divide-[#E2E8F0]"></tbody>
                 </table>
             </div>
 
             <div id="partiesTableWrap" class="hidden overflow-x-auto">
                 <table class="w-full text-left text-xs">
-                    <thead class="bg-slate-950 text-slate-400 uppercase tracking-wider font-bold border-b border-slate-800">
+                    <thead class="bg-[#F8FAFC] text-[#475569] uppercase tracking-wider font-semibold border-b border-[#E2E8F0]">
                         <tr>
-                            <th class="p-4">Supplier GSTIN</th>
+                            <th class="p-3.5">Supplier GSTIN</th>
                             <th class="p-4">Supplier Legal / Trade Name</th>
-                            <th class="p-4 text-center">Total Invoices</th>
-                            <th class="p-4 text-right">Total ERP Tax (₹)</th>
-                            <th class="p-4 text-right">Total Portal 2B Tax (₹)</th>
-                            <th class="p-4 text-right">Net Tax Difference (₹)</th>
-                            <th class="p-4">Party Status</th>
+                            <th class="p-3.5 text-center">Total Invoices</th>
+                            <th class="p-3.5 text-right">Total ERP Tax (₹)</th>
+                            <th class="p-3.5 text-right">Total Portal 2B Tax (₹)</th>
+                            <th class="p-3.5 text-right">Net Tax Difference (₹)</th>
+                            <th class="p-3.5">Party Status</th>
                         </tr>
                     </thead>
-                    <tbody id="partiesTbody" class="divide-y divide-slate-800/60"></tbody>
+                    <tbody id="partiesTbody" class="divide-y divide-[#E2E8F0]"></tbody>
                 </table>
             </div>
         </div>
     </main>
 
     <!-- VAULT HISTORY MODAL -->
-    <div id="vaultModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-5">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+    <div id="vaultModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white border border-[#E2E8F0] rounded-2xl max-w-2xl w-full p-6 shadow-xl space-y-4">
+            <div class="flex justify-between items-center border-b border-[#E2E8F0] pb-3">
                 <div>
-                    <h3 class="text-base font-bold text-white">📂 SQLite Reconciliation Vault</h3>
-                    <p class="text-xs text-slate-400">Select any previously saved month/batch to reload instantly</p>
+                    <h3 class="text-sm font-bold text-[#0F172A]">📂 SQLite Reconciliation Vault</h3>
+                    <p class="text-xs text-[#64748B]">Select any previously saved month/batch to reload</p>
                 </div>
-                <button onclick="closeVaultModal()" class="text-slate-400 hover:text-white font-bold text-lg px-3 py-1 rounded-xl bg-slate-800">✕</button>
+                <button onclick="closeVaultModal()" class="text-[#64748B] hover:text-[#0F172A] font-bold text-sm px-2.5 py-1 rounded-lg bg-[#F1F5F9]">✕</button>
             </div>
-            <div id="vaultList" class="space-y-3 max-h-96 overflow-y-auto pr-2">
-                <p class="text-xs text-slate-500 text-center py-6">Loading vault history...</p>
+            <div id="vaultList" class="space-y-2.5 max-h-96 overflow-y-auto pr-1">
+                <p class="text-xs text-[#64748B] text-center py-6">Loading vault history...</p>
             </div>
         </div>
     </div>
@@ -240,6 +235,11 @@
         let appState = { rows: [], party_summary: [] };
         let activeStatus = 'ALL';
         let viewMode = 'bills';
+
+        function formatINR(val) {
+            const num = typeof val === 'number' && !isNaN(val) ? val : 0;
+            return '₹ ' + num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
 
         function switchErpTab(mode) {
             const slider = document.getElementById('erpSlider');
@@ -267,8 +267,8 @@
             viewMode = mode;
             document.getElementById('billsTableWrap').classList.toggle('hidden', mode !== 'bills');
             document.getElementById('partiesTableWrap').classList.toggle('hidden', mode !== 'parties');
-            document.getElementById('viewBtn_bills').className = mode === 'bills' ? 'px-3.5 py-2 rounded-xl bg-indigo-600 text-white shadow-md shadow-indigo-600/30 transition-all duration-200' : 'px-3.5 py-2 rounded-xl text-slate-400 hover:text-white';
-            document.getElementById('viewBtn_parties').className = mode === 'parties' ? 'px-3.5 py-2 rounded-xl bg-indigo-600 text-white shadow-md shadow-indigo-600/30 transition-all duration-200' : 'px-3.5 py-2 rounded-xl text-slate-400 hover:text-white';
+            document.getElementById('viewBtn_bills').className = mode === 'bills' ? 'px-3.5 py-1.5 rounded-lg bg-blue-600 text-white shadow-sm transition' : 'px-3.5 py-1.5 rounded-lg hover:text-[#0F172A] transition';
+            document.getElementById('viewBtn_parties').className = mode === 'parties' ? 'px-3.5 py-1.5 rounded-lg bg-blue-600 text-white shadow-sm transition' : 'px-3.5 py-1.5 rounded-lg hover:text-[#0F172A] transition';
             renderActiveView();
         }
 
@@ -349,25 +349,15 @@
         }
 
         async function saveCurrentToVault() {
-            const batchName = prompt("Enter a name for this reconciliation batch (e.g., October_2026_Final):", "October_2026_Recon");
+            const batchName = prompt("Enter batch name (e.g. October_2026_Audit):", "October_2026_Recon");
             if (!batchName) return;
-            
-            try {
-                const res = await fetch('/api/vault/save', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ batch_name: batchName })
-                });
-                const data = await res.json();
-                
-                if (!res.ok) {
-                    alert(data.error || "Failed to save reconciliation to vault.");
-                } else {
-                    alert(data.message || "Successfully saved to SQLite Vault!");
-                }
-            } catch (err) {
-                alert("An error occurred while saving to vault.");
-            }
+            const res = await fetch('/api/vault/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ batch_name: batchName })
+            });
+            const data = await res.json();
+            alert(data.error || data.message);
         }
 
         async function openVaultModal() {
@@ -377,19 +367,19 @@
             const listDiv = document.getElementById('vaultList');
 
             if (history.length === 0) {
-                listDiv.innerHTML = `<p class="text-xs text-slate-500 text-center py-6">No saved reconciliations found in vault yet.</p>`;
+                listDiv.innerHTML = `<p class="text-xs text-[#64748B] text-center py-6">No saved history in vault.</p>`;
                 return;
             }
 
             listDiv.innerHTML = history.map(h => `
-                <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl flex justify-between items-center hover:border-slate-700 transition">
+                <div class="bg-[#F8FAFC] border border-[#E2E8F0] p-3.5 rounded-xl flex justify-between items-center hover:border-slate-300 transition">
                     <div>
-                        <h4 class="text-xs font-bold text-white">${h.batch_name}</h4>
-                        <p class="text-[11px] text-slate-400 mt-0.5">Saved on: ${h.saved_at} | Bills: ${h.total_bills}</p>
-                        <p class="text-[11px] text-indigo-400 font-mono mt-1">ERP Tax: ₹${Number(h.erp_tax).toLocaleString('en-IN')} | 2B Tax: ₹${Number(h.portal_tax).toLocaleString('en-IN')}</p>
+                        <h4 class="text-xs font-bold text-[#0F172A]">${h.batch_name}</h4>
+                        <p class="text-[11px] text-[#64748B] mt-0.5">Saved: ${h.saved_at} | Bills: ${h.total_bills}</p>
+                        <p class="text-[11px] text-blue-600 font-mono mt-0.5">ERP: ${formatINR(h.erp_tax)} | 2B: ${formatINR(h.portal_tax)}</p>
                     </div>
-                    <button onclick="loadVaultBatch(${h.id})" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3.5 py-2 rounded-xl text-xs transition">
-                        📂 Load
+                    <button onclick="loadVaultBatch(${h.id})" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs transition">
+                        Load
                     </button>
                 </div>
             `).join('');
@@ -418,18 +408,14 @@
         function updateUI(data) {
             appState = data;
             document.getElementById('erpCount').innerText = data.erp_count;
-            document.getElementById('erpTax').innerText = '₹' + Number(data.erp_tax).toLocaleString('en-IN');
+            document.getElementById('erpTax').innerText = formatINR(data.erp_tax);
             document.getElementById('erpBadge').innerText = data.erp_label;
-            document.getElementById('erpBadge').className = data.erp_count > 0
-                ? 'text-xs bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full border border-blue-500/40 font-bold shadow-sm shadow-blue-500/20'
-                : 'text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700 font-medium';
+            document.getElementById('erpBadge').className = data.erp_count > 0 ? 'text-xs bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200 font-medium' : 'text-xs bg-[#F1F5F9] text-[#64748B] px-3 py-1 rounded-full border border-[#E2E8F0] font-medium';
 
             document.getElementById('portalCount').innerText = data.portal_count;
-            document.getElementById('portalTax').innerText = '₹' + Number(data.portal_tax).toLocaleString('en-IN');
+            document.getElementById('portalTax').innerText = formatINR(data.portal_tax);
             document.getElementById('portalBadge').innerText = data.portal_label;
-            document.getElementById('portalBadge').className = data.portal_count > 0
-                ? 'text-xs bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full border border-emerald-500/40 font-bold shadow-sm shadow-emerald-500/20'
-                : 'text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700 font-medium';
+            document.getElementById('portalBadge').className = data.portal_count > 0 ? 'text-xs bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200 font-medium' : 'text-xs bg-[#F1F5F9] text-[#64748B] px-3 py-1 rounded-full border border-[#E2E8F0] font-medium';
 
             renderStatusCards();
             renderActiveView();
@@ -443,31 +429,31 @@
 
         function renderStatusCards() {
             const cats = [
-                { key: 'ALL', label: 'All Invoices', borderColor: 'border-indigo-500/60', activeRing: 'ring-2 ring-indigo-500 bg-indigo-950/40 shadow-indigo-600/20' },
-                { key: 'Matched', label: 'Matched (Claim ITC)', borderColor: 'border-emerald-500/60', activeRing: 'ring-2 ring-emerald-500 bg-emerald-950/40 shadow-emerald-600/20' },
-                { key: 'Value Differed', label: 'Value Differed', borderColor: 'border-amber-500/60', activeRing: 'ring-2 ring-amber-500 bg-amber-950/40 shadow-amber-600/20' },
-                { key: 'Only in ERP/Books', label: 'Only in ERP / Books', borderColor: 'border-rose-500/60', activeRing: 'ring-2 ring-rose-500 bg-rose-950/40 shadow-rose-600/20' },
-                { key: 'Only in GST Portal', label: 'Only in GST Portal', borderColor: 'border-purple-500/60', activeRing: 'ring-2 ring-purple-500 bg-purple-950/40 shadow-purple-600/20' }
+                { key: 'ALL', label: 'All Unmatched', bg: 'bg-[#F8FAFC]', border: 'border-[#E2E8F0]', activeRing: 'ring-2 ring-blue-600 bg-blue-50/50' },
+                { key: 'Matched', label: 'Matched (Exact/Pass)', bg: 'bg-[#ECFDF5]', border: 'border-[#A7F3D0]', text: 'text-[#065F46]', activeRing: 'ring-2 ring-emerald-600 bg-emerald-50' },
+                { key: 'Value Differed', label: 'Value Differed', bg: 'bg-[#FFFBEB]', border: 'border-[#FDE68A]', text: 'text-[#92400E]', activeRing: 'ring-2 ring-amber-500 bg-amber-50' },
+                { key: 'Only in ERP/Books', label: 'Missing in 2B Portal', bg: 'bg-[#FEF2F2]', border: 'border-[#FECACA]', text: 'text-[#991B1B]', activeRing: 'ring-2 ring-rose-600 bg-rose-50' },
+                { key: 'Only in GST Portal', label: 'Missing in Books', bg: 'bg-[#FEF2F2]', border: 'border-[#FECACA]', text: 'text-[#991B1B]', activeRing: 'ring-2 ring-purple-600 bg-purple-50' }
             ];
             const rows = appState.rows || [];
             document.getElementById('statusGrid').innerHTML = cats.map(c => {
-                const sub = c.key === 'ALL' ? rows : rows.filter(r => r.Status === c.key);
+                const sub = c.key === 'ALL' 
+                    ? rows.filter(r => r.Status !== 'Matched') 
+                    : rows.filter(r => r.Status === c.key);
                 const eTax = sub.reduce((a, b) => a + Number(b.ERP_Tax || 0), 0);
                 const pTax = sub.reduce((a, b) => a + Number(b.Portal_Tax || 0), 0);
                 
-                const isSel = activeStatus === c.key 
-                    ? c.activeRing + ' shadow-xl scale-[1.02]' 
-                    : 'bg-slate-900/90 hover:bg-slate-800/90 ' + c.borderColor + ' hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/50';
+                const isSel = activeStatus === c.key ? c.activeRing : `${c.bg} border ${c.border} hover:shadow-sm`;
 
                 return `
-                    <div onclick="selectStatus('${c.key}')" class="cursor-pointer p-5 rounded-3xl border-2 ${isSel} transition-all duration-200 flex flex-col justify-between">
+                    <div onclick="selectStatus('${c.key}')" class="cursor-pointer p-4 rounded-2xl ${isSel} transition-all duration-150 flex flex-col justify-between">
                         <div>
-                            <div class="text-[10px] font-black uppercase tracking-wider text-slate-400">${c.label}</div>
-                            <div class="text-3xl font-black mt-2 text-white">${sub.length}</div>
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">${c.label}</div>
+                            <div class="text-2xl font-bold font-mono mt-1 text-[#0F172A]">${sub.length}</div>
                         </div>
-                        <div class="mt-4 pt-3 border-t border-slate-800/80 space-y-1">
-                            <div class="text-[11px] text-slate-300 font-semibold flex justify-between"><span>ERP:</span> <span class="font-mono text-white">₹${eTax.toLocaleString('en-IN')}</span></div>
-                            <div class="text-[11px] text-slate-300 font-semibold flex justify-between"><span>2B:</span> <span class="font-mono text-white">₹${pTax.toLocaleString('en-IN')}</span></div>
+                        <div class="mt-3 pt-2.5 border-t border-[#E2E8F0]/60 space-y-0.5 text-[11px] text-[#64748B]">
+                            <div class="flex justify-between font-medium"><span>ERP:</span> <span class="font-mono text-[#0F172A]">${formatINR(eTax)}</span></div>
+                            <div class="flex justify-between font-medium"><span>2B:</span> <span class="font-mono text-[#0F172A]">${formatINR(pTax)}</span></div>
                         </div>
                     </div>
                 `;
@@ -477,14 +463,14 @@
         function renderActiveView() {
             const q = document.getElementById('searchBox').value.toLowerCase();
             const badgeStyle = {
-                'Matched': 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 shadow-sm shadow-emerald-500/10',
-                'Value Differed': 'bg-amber-500/15 text-amber-300 border border-amber-500/30 shadow-sm shadow-amber-500/10',
-                'Only in ERP/Books': 'bg-rose-500/15 text-rose-300 border border-rose-500/30 shadow-sm shadow-rose-500/10',
-                'Only in GST Portal': 'bg-purple-500/15 text-purple-300 border border-purple-500/30 shadow-sm shadow-purple-500/10'
+                'Matched': 'bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0]',
+                'Value Differed': 'bg-[#FFFBEB] text-[#92400E] border border-[#FDE68A]',
+                'Only in ERP/Books': 'bg-[#FEF2F2] text-[#991B1B] border border-[#FECACA]',
+                'Only in GST Portal': 'bg-[#FEF2F2] text-[#991B1B] border border-[#FECACA]'
             };
 
             const rows = (appState.rows || []).filter(r => {
-                const stOk = activeStatus === 'ALL' || r.Status === activeStatus;
+                const stOk = activeStatus === 'ALL' ? r.Status !== 'Matched' : r.Status === activeStatus;
                 const qOk = !q ||
                     String(r.GSTIN).toLowerCase().includes(q) ||
                     String(r.Supplier_Name).toLowerCase().includes(q) ||
@@ -495,21 +481,21 @@
             });
 
             if (rows.length === 0) {
-                document.getElementById('billsTbody').innerHTML = `<tr><td colspan="11" class="p-10 text-center text-slate-400 font-medium">Connect both sources or click <strong class="text-white">"⚡ 1-Click Load Sample"</strong> at the top right to view sorted invoices.</td></tr>`;
+                document.getElementById('billsTbody').innerHTML = `<tr><td colspan="11" class="p-8 text-center text-[#64748B] font-medium">No records found for this filter.</td></tr>`;
             } else {
                 document.getElementById('billsTbody').innerHTML = rows.map(r => `
-                    <tr class="hover:bg-slate-800/40 transition-colors duration-150">
-                        <td class="p-4 font-mono text-slate-300 font-medium">${r.GSTIN}</td>
-                        <td class="p-4 font-bold text-white">${r.Supplier_Name}</td>
-                        <td class="p-4 text-slate-300 font-mono">${r.ERP_Invoice_No}</td>
-                        <td class="p-4 text-slate-300 font-mono">${r.Portal_Invoice_No}</td>
-                        <td class="p-4 text-slate-400 font-medium">${r.Invoice_Date}</td>
-                        <td class="p-4 text-right font-mono font-medium">₹${Number(r.ERP_Tax).toLocaleString('en-IN')}</td>
-                        <td class="p-4 text-right font-mono font-medium">₹${Number(r.Portal_Tax).toLocaleString('en-IN')}</td>
-                        <td class="p-4 text-right font-mono font-bold ${r.Tax_Difference == 0 ? 'text-slate-400' : 'text-amber-400'}">₹${Number(r.Tax_Difference).toLocaleString('en-IN')}</td>
-                        <td class="p-4"><span class="px-3 py-1 rounded-full text-[10px] font-bold tracking-wide inline-block ${badgeStyle[r.Status] || ''}">${r.Status}</span></td>
-                        <td class="p-4 text-slate-400 font-medium">${r.Match_Pass}</td>
-                        <td class="p-4 text-indigo-300 font-semibold">${r.Suggested_Action}</td>
+                    <tr class="hover:bg-[#F8FAFC] transition-colors">
+                        <td class="p-3.5 font-mono font-medium text-[#0F172A]">${r.GSTIN}</td>
+                        <td class="p-3.5 font-semibold text-[#0F172A]">${r.Supplier_Name}</td>
+                        <td class="p-3.5 font-mono text-[#475569]">${r.ERP_Invoice_No}</td>
+                        <td class="p-3.5 font-mono text-[#475569]">${r.Portal_Invoice_No}</td>
+                        <td class="p-3.5 text-[#475569]">${r.Invoice_Date}</td>
+                        <td class="p-3.5 text-right font-mono">${formatINR(r.ERP_Tax)}</td>
+                        <td class="p-3.5 text-right font-mono">${formatINR(r.Portal_Tax)}</td>
+                        <td class="p-3.5 text-right font-mono font-bold ${r.Tax_Difference == 0 ? 'text-[#475569]' : 'text-amber-700'}">${formatINR(r.Tax_Difference)}</td>
+                        <td class="p-3.5"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide inline-block ${badgeStyle[r.Status] || ''}">${r.Status}</span></td>
+                        <td class="p-3.5 text-[#64748B]">${r.Match_Pass}</td>
+                        <td class="p-3.5 text-blue-700 font-semibold">${r.Suggested_Action}</td>
                     </tr>
                 `).join('');
             }
@@ -517,16 +503,16 @@
             const parties = (appState.party_summary || []).filter(p => !q || String(p.GSTIN).toLowerCase().includes(q) || String(p.Supplier_Name).toLowerCase().includes(q));
             document.getElementById('partiesTbody').innerHTML = parties.map(p => {
                 const pStatus = p.Diff === 0 ? 'Agrees (₹0 Diff)' : (p.Diff > 0 ? 'Books Higher' : '2B Portal Higher');
-                const pColor = p.Diff === 0 ? 'text-emerald-400' : 'text-amber-400';
+                const pColor = p.Diff === 0 ? 'text-emerald-700' : 'text-amber-700';
                 return `
-                    <tr class="hover:bg-slate-800/40 transition-colors duration-150">
-                        <td class="p-4 font-mono text-slate-300 font-medium">${p.GSTIN}</td>
-                        <td class="p-4 font-bold text-white">${p.Supplier_Name}</td>
-                        <td class="p-4 text-center font-bold">${p.Total_Bills}</td>
-                        <td class="p-4 text-right font-mono font-medium">₹${Number(p.ERP_Tax).toLocaleString('en-IN')}</td>
-                        <td class="p-4 text-right font-mono font-medium">₹${Number(p.Portal_Tax).toLocaleString('en-IN')}</td>
-                        <td class="p-4 text-right font-mono font-bold ${pColor}">₹${Number(p.Diff).toLocaleString('en-IN')}</td>
-                        <td class="p-4 font-bold ${pColor}">${pStatus}</td>
+                    <tr class="hover:bg-[#F8FAFC] transition-colors">
+                        <td class="p-3.5 font-mono text-[#0F172A]">${p.GSTIN}</td>
+                        <td class="p-3.5 font-bold text-[#0F172A]">${p.Supplier_Name}</td>
+                        <td class="p-3.5 text-center font-bold font-mono">${p.Total_Bills}</td>
+                        <td class="p-3.5 text-right font-mono">${formatINR(p.ERP_Tax)}</td>
+                        <td class="p-3.5 text-right font-mono">${formatINR(p.Portal_Tax)}</td>
+                        <td class="p-3.5 text-right font-mono font-bold ${pColor}">${formatINR(p.Diff)}</td>
+                        <td class="p-3.5 font-bold ${pColor}">${pStatus}</td>
                     </tr>
                 `;
             }).join('');
