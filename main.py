@@ -15,6 +15,8 @@ from config_and_samples import get_sample_erp_df, get_sample_portal_df
 from connectors import parse_uploaded_file, fetch_erpnext_invoices
 from modules.purchase_register import run_matching_engine, PurchaseRegisterEngine
 from database import init_db, save_reconciliation, get_all_history, get_reconciliation_by_id
+from modules.sales_register import SalesRegisterEngine
+from modules.notes_recon import NotesReconciliationEngine
 
 app = FastAPI(title="CA GST Suite Pro — Professional Tax Workstation")
 
@@ -290,5 +292,56 @@ async def purchase_reconciliation(request: Request):
         "records": processed_data
     }
 
+@app.get("/sales-recon")
+async def sales_reconciliation(request: Request):
+    """
+    API endpoint to process and fetch Sales Reconciliation vs GSTR-1 details.
+    """
+    # Sample fallback sales data for testing purpose
+    sample_erp_sales = pd.DataFrame([
+        {"GSTIN": "33AABCU9603R1ZM", "Supplier_Name": "Client Enterprises", "Invoice_No": "INV-2026-101", "Invoice_Date": "2026-11-02", "Taxable_Value": 100000.0, "IGST": 0.0, "CGST": 9000.0, "SGST": 9000.0},
+        {"GSTIN": "33AADCS1234F1Z5", "Supplier_Name": "Retail Buyer Corp", "Invoice_No": "INV-2026-102", "Invoice_Date": "2026-11-04", "Taxable_Value": 50000.0, "IGST": 9000.0, "CGST": 0.0, "SGST": 0.0}
+    ])
+    
+    sample_gstr1 = pd.DataFrame([
+        {"GSTIN": "33AABCU9603R1ZM", "Supplier_Name": "Client Enterprises", "Invoice_No": "INV-2026-101", "Invoice_Date": "2026-11-02", "Taxable_Value": 100000.0, "IGST": 0.0, "CGST": 9000.0, "SGST": 9000.0}
+        # INV-2026-102 intentionally omitted to test "Missing in GSTR-1" detection
+    ])
+
+    # Initialize Sales Reconciliation Engine
+    engine = SalesRegisterEngine(sample_erp_sales, sample_gstr1)
+    reconciled_df = engine.process_sales_reconciliation()
+    summary_metrics = engine.generate_sales_summary(reconciled_df)
+
+    return {
+        "status": "success",
+        "module": "Sales Reconciliation vs GSTR-1 (Module 1 / Point 6)",
+        "summary": summary_metrics,
+        "records": reconciled_df.to_dict(orient="records")
+    }
+@app.get("/notes-recon")
+async def notes_reconciliation(request: Request):
+    """
+    API endpoint to process and fetch Credit/Debit Notes Reconciliation details.
+    """
+    sample_erp_notes = pd.DataFrame([
+        {"GSTIN": "33AABCU9603R1ZM", "Party_Name": "Chennai Steel Pvt Ltd", "Note_Type": "CN", "Note_No": "CN/2026/01", "Note_Date": "12-10-2026", "IGST": 0.0, "CGST": 500.0, "SGST": 500.0},
+        {"GSTIN": "33AADCS1234F1Z5", "Party_Name": "Apex Logistics India", "Note_Type": "DN", "Note_No": "DN-99", "Note_Date": "14-10-2026", "IGST": 1200.0, "CGST": 0.0, "SGST": 0.0}
+    ])
+    
+    sample_portal_notes = pd.DataFrame([
+        {"GSTIN": "33AABCU9603R1ZM", "Party_Name": "Chennai Steel Pvt Ltd", "Note_Type": "CN", "Note_No": "CN/2026/01", "Note_Date": "12-10-2026", "IGST": 0.0, "CGST": 500.0, "SGST": 500.0}
+    ])
+
+    engine = NotesReconciliationEngine(sample_erp_notes, sample_portal_notes)
+    reco_df = engine.process_notes_recon()
+    summary_metrics = engine.generate_notes_summary(reco_df)
+
+    return {
+        "status": "success",
+        "module": "Credit/Debit Notes Reconciliation (Module 3)",
+        "summary": summary_metrics,
+        "records": reco_df.to_dict(orient="records")
+    }
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
