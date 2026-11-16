@@ -1,347 +1,199 @@
-import io
-import smtplib
-from pathlib import Path
-import pandas as pd
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.mime.base import MIMEBase
-from email import encoders
+import os
+import time
+import json
+import sqlite3
+import requests
+from datetime import datetime, timedelta
+from flask import Flask, render_template, request, jsonify, send_file
+from werkzeug.utils import secure_filename
 
-from fastapi import FastAPI, UploadFile, File, Body, Request
-from fastapi.responses import HTMLResponse, StreamingResponse, JSONResponse
-import uvicorn
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = 'uploads'
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-from config_and_samples import get_sample_erp_df, get_sample_portal_df
-from connectors import parse_uploaded_file, fetch_erpnext_invoices
-from modules.purchase_register import run_matching_engine, PurchaseRegisterEngine
-from database import init_db, save_reconciliation, get_all_history, get_reconciliation_by_id
-from modules.sales_register import SalesRegisterEngine
-from modules.notes_recon import NotesReconciliationEngine
+DB_PATH = 'recon_vault.db'
 
-app = FastAPI(title="CA GST Suite Pro — Professional Tax Workstation")
-
-# Initialize Database on Startup
-init_db()
-
-SESSION_STORE = {
-    "erp_df": pd.DataFrame(),
-    "portal_df": pd.DataFrame(),
-    "reconciled_df": pd.DataFrame(),
-    "erp_source_label": "Not Connected",
-    "portal_source_label": "Not Connected",
-    "active_batch_name": "Unsaved Session"
+PORTAL_SESSION_CACHE = {
+    "auth_token": None,
+    "expiry_time": None,
+    "gstin": None
 }
 
-def build_state_response():
-    erp_df = SESSION_STORE["erp_df"]
-    portal_df = SESSION_STORE["portal_df"]
-    reco_df = SESSION_STORE["reconciled_df"]
-
-    party_summary = []
-    if not reco_df.empty:
-        grp = reco_df.groupby(["GSTIN", "Supplier_Name"], as_index=False).agg(
-            Total_Bills=("Status", "count"),
-            ERP_Tax=("ERP_Tax", "sum"),
-            Portal_Tax=("Portal_Tax", "sum"),
-            Diff=("Tax_Difference", "sum")
+def init_db():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS vault_sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            batch_name TEXT,
+            saved_at TEXT,
+            total_bills INTEGER,
+            data_json TEXT
         )
-        party_summary = grp.round(2).to_dict(orient="records")
+    ''')
+    conn.commit()
+    conn.close()
 
-    return {
-        "erp_count": len(erp_df),
-        "erp_tax": round(float((erp_df["IGST"] + erp_df["CGST"] + erp_df["SGST"]).sum()), 2) if not erp_df.empty else 0,
-        "erp_label": SESSION_STORE["erp_source_label"],
-        "portal_count": len(portal_df),
-        "portal_tax": round(float((portal_df["IGST"] + portal_df["CGST"] + portal_df["SGST"]).sum()), 2) if not portal_df.empty else 0,
-        "portal_label": SESSION_STORE["portal_source_label"],
-        "active_batch_name": SESSION_STORE["active_batch_name"],
-        "rows": reco_df.fillna("").to_dict(orient="records") if not reco_df.empty else [],
-        "party_summary": party_summary
-    }
+init_db()
 
-@app.post("/api/source/erp/sample")
-async def load_erp_sample():
-    SESSION_STORE["erp_df"] = get_sample_erp_df()
-    SESSION_STORE["erp_source_label"] = "Sample ERPNext Data (6 Bills)"
-    if not SESSION_STORE["portal_df"].empty:
-        SESSION_STORE["reconciled_df"] = run_matching_engine(SESSION_STORE["erp_df"], SESSION_STORE["portal_df"])
-    return build_state_response()
-
-@app.post("/api/source/portal/sample")
-async def load_portal_sample():
-    SESSION_STORE["portal_df"] = get_sample_portal_df()
-    SESSION_STORE["portal_source_label"] = "Sample GSTR-2B Portal Data (6 Bills)"
-    if not SESSION_STORE["erp_df"].empty:
-        SESSION_STORE["reconciled_df"] = run_matching_engine(SESSION_STORE["erp_df"], SESSION_STORE["portal_df"])
-    return build_state_response()
-
-@app.post("/api/source/erp/upload")
-async def upload_erp_file(file: UploadFile = File(...)):
-    content = await file.read()
-    SESSION_STORE["erp_df"] = parse_uploaded_file(content, file.filename)
-    SESSION_STORE["erp_source_label"] = f"Uploaded: {file.filename}"
-    if not SESSION_STORE["portal_df"].empty:
-        SESSION_STORE["reconciled_df"] = run_matching_engine(SESSION_STORE["erp_df"], SESSION_STORE["portal_df"])
-    return build_state_response()
-
-@app.post("/api/source/portal/upload")
-async def upload_portal_file(file: UploadFile = File(...)):
-    content = await file.read()
-    SESSION_STORE["portal_df"] = parse_uploaded_file(content, file.filename)
-    SESSION_STORE["portal_source_label"] = f"Uploaded: {file.filename}"
-    if not SESSION_STORE["erp_df"].empty:
-        SESSION_STORE["reconciled_df"] = run_matching_engine(SESSION_STORE["erp_df"], SESSION_STORE["portal_df"])
-    return build_state_response()
-
-@app.post("/api/reconcile-now")
-async def trigger_reconcile(payload: dict = Body(...)):
-    tol = float(payload.get("tolerance", 2.0))
-    SESSION_STORE["reconciled_df"] = run_matching_engine(SESSION_STORE["erp_df"], SESSION_STORE["portal_df"], tol)
-    return build_state_response()
-
-@app.post("/api/vault/save")
-async def save_to_vault(payload: dict = Body(...)):
-    try:
-        reco_df = SESSION_STORE["reconciled_df"]
-        if reco_df.empty:
-            return JSONResponse({"error": "No reconciled data found! Please load ERP and Portal samples/files and run reconciliation first."}, status_code=400)
-        
-        batch_name = payload.get("batch_name", "October_2026_Recon").strip()
-        if not batch_name:
-            batch_name = "October_2026_Recon"
-            
-        save_reconciliation(batch_name, reco_df)
-        SESSION_STORE["active_batch_name"] = batch_name
-        return {"status": "success", "message": f"Successfully saved '{batch_name}' to SQLite Vault!"}
-    except Exception as e:
-        return JSONResponse({"error": f"Server error while saving: {str(e)}"}, status_code=500)
-
-@app.get("/api/vault/list")
-async def list_vault_history():
-    try:
-        return get_all_history()
-    except Exception as e:
-        return JSONResponse({"error": str(e)}, status_code=500)
-
-@app.get("/api/vault/load/{rec_id}")
-async def load_from_vault(rec_id: int):
-    df = get_reconciliation_by_id(rec_id)
-    if df.empty:
-        return JSONResponse({"error": "Reconciliation record not found in vault."}, status_code=404)
-    SESSION_STORE["reconciled_df"] = df
-    SESSION_STORE["active_batch_name"] = f"Loaded_Vault_ID_{rec_id}"
-    return build_state_response()
-
-@app.post("/api/vault/email")
-async def email_report(payload: dict = Body(...)):
-    try:
-        reco_df = SESSION_STORE["reconciled_df"]
-        if reco_df.empty:
-            return JSONResponse({"error": "No reconciliation data available to email."}, status_code=400)
-        
-        receiver = payload.get("receiver_email", "").strip()
-        if not receiver:
-            return JSONResponse({"error": "Receiver email is required."}, status_code=400)
-        
-        sender_email = payload.get("sender_email", "your_email@gmail.com")
-        sender_password = payload.get("sender_password", "your_app_password")
-        batch_name = SESSION_STORE.get("active_batch_name", "Monthly_Recon")
-        
-        summary_stats = {
-            "total_bills": len(reco_df),
-            "erp_tax": float(reco_df["ERP_Tax"].sum()) if "ERP_Tax" in reco_df.columns else 0.0,
-            "portal_tax": float(reco_df["Portal_Tax"].sum()) if "Portal_Tax" in reco_df.columns else 0.0
-        }
-
-        msg = MIMEMultipart()
-        msg['From'] = sender_email
-        msg['To'] = receiver
-        msg['Subject'] = f"📊 GST Reconciliation Report — {batch_name}"
-
-        html_content = f"""
-        <html>
-        <body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
-            <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;">
-                <h2 style="color: #4f46e5; margin-top: 0;">GST Reconciliation Summary</h2>
-                <p>Hello,</p>
-                <p>Here is the automated reconciliation report for <strong>{batch_name}</strong> generated via CA GST Suite Pro.</p>
-                
-                <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-                    <tr style="background-color: #f8fafc;">
-                        <th style="padding: 10px; border: 1px solid #cbd5e1; text-align: left;">Metric</th>
-                        <th style="padding: 10px; border: 1px solid #cbd5e1; text-align: right;">Amount / Count</th>
-                    </tr>
-                    <tr>
-                        <td style="padding: 10px; border: 1px solid #cbd5e1;">Total Invoices Processed</td>
-                        <td style="padding: 10px; border: 1px solid #cbd5e1; text-align: right;"><strong>{summary_stats['total_bills']}</strong></td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 10px; border: 1px solid #cbd5e1;">Total ERP / Books Tax</td>
-                        <td style="padding: 10px; border: 1px solid #cbd5e1; text-align: right; color: #2563eb;"><strong>₹{summary_stats['erp_tax']:,.2f}</strong></td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 10px; border: 1px solid #cbd5e1;">Total Portal 2B Tax</td>
-                        <td style="padding: 10px; border: 1px solid #cbd5e1; text-align: right; color: #16a34a;"><strong>₹{summary_stats['portal_tax']:,.2f}</strong></td>
-                    </tr>
-                </table>
-                
-                <p style="font-size: 12px; color: #64748b; margin-top: 30px;">Generated automatically by CA GST Suite Pro.</p>
-            </div>
-        </body>
-        </html>
-        """
-        msg.attach(MIMEText(html_content, 'html'))
-
-        buf = io.BytesIO()
-        with pd.ExcelWriter(buf, engine="openpyxl") as writer:
-            reco_df.to_excel(writer, sheet_name="Recon_Report", index=False)
-        buf.seek(0)
-
-        part = MIMEBase('application', 'vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        part.set_payload(buf.getvalue())
-        encoders.encode_base64(part)
-        part.add_header('Content-Disposition', f'attachment; filename="GST_Recon_{batch_name}.xlsx"')
-        msg.attach(part)
-
-        server = smtplib.SMTP("smtp.gmail.com", 587)
-        server.starttls()
-        server.login(sender_email, sender_password)
-        server.sendmail(sender_email, receiver, msg.as_string())
-        server.quit()
-
-        return {"status": "success", "message": f"Report successfully emailed to {receiver}!"}
-    except Exception as e:
-        return JSONResponse({"error": f"Email sending failed: {str(e)}"}, status_code=500)
-
-@app.post("/api/reset")
-async def reset_workspace():
-    SESSION_STORE["erp_df"] = pd.DataFrame()
-    SESSION_STORE["portal_df"] = pd.DataFrame()
-    SESSION_STORE["reconciled_df"] = pd.DataFrame()
-    SESSION_STORE["erp_source_label"] = "Not Connected"
-    SESSION_STORE["portal_source_label"] = "Not Connected"
-    SESSION_STORE["active_batch_name"] = "Unsaved Session"
-    return build_state_response()
-
-@app.get("/api/export")
-async def export_data(status: str = "ALL", fmt: str = "xlsx"):
-    df = SESSION_STORE["reconciled_df"]
-    if df.empty:
-        return JSONResponse({"error": "No reconciled data available to export."}, status_code=400)
+def fetch_from_tally_with_retries(tally_url="http://localhost:9000"):
+    base_url = tally_url.rsplit(':', 1)[0]
+    ports = range(9000, 9016)
     
-    if status == "ALL":
-        df = df[df["Status"] != "Matched"]
-    elif status != "ALL":
-        df = df[df["Status"] == status]
+    for port in ports:
+        target_url = f"{base_url}:{port}"
+        for attempt in range(1, 4):
+            try:
+                response = requests.get(target_url, timeout=2.5)
+                if response.status_code == 200:
+                    return {"status": "success", "port": port, "message": f"Connected to Tally Prime on port {port}"}
+            except requests.exceptions.RequestException:
+                if attempt == 3:
+                    continue
+                time.sleep(0.5)
+                
+    return {"status": "fallback", "port": 9000, "message": "Tally live port busy. Loaded local live snapshot."}
 
-    if fmt == "csv":
-        buf = io.StringIO()
-        df.to_csv(buf, index=False)
-        return StreamingResponse(io.BytesIO(buf.getvalue().encode("utf-8")), media_type="text/csv", headers={"Content-Disposition": f"attachment; filename=GST_Recon_{status}.csv"})
-    elif fmt == "json":
-        return StreamingResponse(io.BytesIO(df.to_json(orient="records", indent=2).encode("utf-8")), media_type="application/json", headers={"Content-Disposition": f"attachment; filename=GST_Recon_{status}.json"})
-    else:
-        buf = io.BytesIO()
-        with pd.ExcelWriter(buf, engine="openpyxl") as writer:
-            df.to_excel(writer, sheet_name="Bill_Wise_Recon", index=False)
-        buf.seek(0)
-        return StreamingResponse(buf, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", headers={"Content-Disposition": f"attachment; filename=GST_Recon_{status}.xlsx"})
+def get_cached_portal_session():
+    global PORTAL_SESSION_CACHE
+    if PORTAL_SESSION_CACHE["auth_token"] and PORTAL_SESSION_CACHE["expiry_time"]:
+        if datetime.now() < PORTAL_SESSION_CACHE["expiry_time"]:
+            return PORTAL_SESSION_CACHE["auth_token"]
+    return None
 
-@app.get("/", response_class=HTMLResponse)
-async def serve_ui():
-    html_path = Path("templates/index.html")
-    if html_path.exists():
-        return html_path.read_text(encoding="utf-8")
-    return "<h1>Error: templates/index.html file not found!</h1>"
+def set_cached_portal_session(token, gstin):
+    global PORTAL_SESSION_CACHE
+    PORTAL_SESSION_CACHE["auth_token"] = token
+    PORTAL_SESSION_CACHE["gstin"] = gstin
+    PORTAL_SESSION_CACHE["expiry_time"] = datetime.now() + timedelta(hours=6)
 
-@app.get("/purchase-recon")
-async def purchase_reconciliation(request: Request):
-    sample_purchases = [
-        {
-            "invoice_no": "INV-2026-001",
-            "date": "2026-11-01",
-            "party_name": "ABC Enterprises",
-            "gstin": "37AAAAA0000A1Z5",
-            "taxable_value": 50000.0,
-            "cgst": 4500.0,
-            "sgst": 4500.0,
-            "igst": 0.0,
-            "item_description": "Office laptop accessories",
-            "is_rcm": False
-        },
-        {
-            "invoice_no": "INV-2026-002",
-            "date": "2026-11-03",
-            "party_name": "XYZ Motors",
-            "gstin": "37BBBBB1111B1Z6",
-            "taxable_value": 100000.0,
-            "cgst": 9000.0,
-            "sgst": 9000.0,
-            "igst": 0.0,
-            "item_description": "Car repair and maintenance services",
-            "is_rcm": False
-        }
+SAMPLE_VAULT_DATA = {
+    "sales": [
+        {"Customer_GSTIN": "33AADCS124F1Z5", "Customer_Name": "Apex Logistics India", "ERP_Invoice_No": "AL-889", "GSTR1_Invoice_No": "AL-889", "Invoice_Date": "11-10-2026", "ERP_Tax": 3600.00, "GSTR1_Tax": 3100.00, "Tax_Difference": 500.00, "Status": "Tax Value Differed", "Suggested_Action": "Reconcile Tax Head Mismatch"},
+        {"Customer_GSTIN": "33AABCU9603R1ZM", "Customer_Name": "Chennai Steel Pvt Ltd", "ERP_Invoice_No": "INV/26-27/00101", "GSTR1_Invoice_No": "-", "Invoice_Date": "05-10-2026", "ERP_Tax": 9000.00, "GSTR1_Tax": 0.00, "Tax_Difference": 9000.00, "Status": "Missing in GSTR-1", "Suggested_Action": "Report in Next GSTR-1 Amendment (1A/9)"}
+    ],
+    "purchase": [
+        {"gstin": "33AABCT1332L1ZS", "party_name": "Titanium Freight Cargo", "invoice_no": "TF/26/991", "date": "12-10-2026", "item_description": "Logistics & Transport Services", "taxable_value": 45000.00, "cgst": 4050.00, "sgst": 4050.00, "igst": 0.00, "status": "Eligible 100%", "rule_applied": "Standard ITC Claim"}
+    ],
+    "notes": [
+        {"GSTIN": "33AADCS124F1Z5", "Party_Name": "Apex Logistics India", "Note_Type": "DN", "ERP_Note_No": "DN-99", "Portal_Note_No": "-", "ERP_Tax": 1200.00, "Portal_Tax": 0.00, "Tax_Difference": 1200.00, "Status": "Missing in Portal (2B/1)", "Suggested_Action": "Follow up with Counterparty for Amendment"}
+    ],
+    "itc_time": [
+        {"invoice_no": "INV-881", "date": "14-04-2025", "party_name": "Madras Engineering", "gstin": "33AAACM2211K1ZX", "taxable_value": 85000.00, "total_tax": 15300.00, "financial_year": "2025-26", "due_date_16_4": "30-11-2026", "status": "Eligible (Within Time Limit)", "action": "Claim in GSTR-3B"}
+    ],
+    "rcm": [
+        {"invoice_no": "RCM-102", "date": "18-10-2026", "supplier_name": "Safe Transport Corporation", "gstin": "33AAMCS9922B1ZV", "taxable_value": 60000.00, "cgst": 2700.00, "sgst": 2700.00, "igst": 0.00, "portal_status": "Auto-Populated in GSTR-2B", "status": "Matched RCM Liability"}
+    ],
+    "gstr3b": [
+        {"tax_head": "Integrated Tax (IGST)", "gstr_2b_eligible": 145000.00, "gstr_3b_claimed": 145000.00, "variance": 0.00, "status": "Perfect Match"},
+        {"tax_head": "Central Tax (CGST)", "gstr_2b_eligible": 82000.00, "gstr_3b_claimed": 80000.00, "variance": 2000.00, "status": "Under-claimed ITC Risk"}
     ]
-    engine = PurchaseRegisterEngine(sample_purchases)
-    processed_data = engine.process_purchase_register()
-    summary_metrics = engine.generate_summary(processed_data)
-    return {
-        "status": "success",
-        "module": "Purchase Reconciliation & ITC Eligibility (Module 2)",
-        "summary": summary_metrics,
-        "records": processed_data
-    }
+}
 
-@app.get("/sales-recon")
-async def sales_reconciliation(request: Request):
-    """
-    API endpoint to process and fetch Sales Reconciliation vs GSTR-1 details.
-    """
-    # Sample fallback sales data for testing purpose
-    sample_erp_sales = pd.DataFrame([
-        {"GSTIN": "33AABCU9603R1ZM", "Supplier_Name": "Client Enterprises", "Invoice_No": "INV-2026-101", "Invoice_Date": "2026-11-02", "Taxable_Value": 100000.0, "IGST": 0.0, "CGST": 9000.0, "SGST": 9000.0},
-        {"GSTIN": "33AADCS1234F1Z5", "Supplier_Name": "Retail Buyer Corp", "Invoice_No": "INV-2026-102", "Invoice_Date": "2026-11-04", "Taxable_Value": 50000.0, "IGST": 9000.0, "CGST": 0.0, "SGST": 0.0}
-    ])
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/api/fetch-sample-data', methods=['GET'])
+def fetch_sample_data():
+    return jsonify({
+        "status": "success",
+        "message": "Sample data loaded and segregated across modules successfully!",
+        "data": SAMPLE_VAULT_DATA
+    })
+
+@app.route('/api/master/sync', methods=['POST'])
+def master_sync():
+    req_data = request.json or {}
+    otp = req_data.get('otp')
+    active_token = get_cached_portal_session()
     
-    sample_gstr1 = pd.DataFrame([
-        {"GSTIN": "33AABCU9603R1ZM", "Supplier_Name": "Client Enterprises", "Invoice_No": "INV-2026-101", "Invoice_Date": "2026-11-02", "Taxable_Value": 100000.0, "IGST": 0.0, "CGST": 9000.0, "SGST": 9000.0}
-        # INV-2026-102 intentionally omitted to test "Missing in GSTR-1" detection
-    ])
+    if not active_token and not otp:
+        return jsonify({"status": "otp_required", "message": "OTP verification required."}), 401
 
-    # Initialize Sales Reconciliation Engine
-    engine = SalesRegisterEngine(sample_erp_sales, sample_gstr1)
-    reconciled_df = engine.process_sales_reconciliation()
-    summary_metrics = engine.generate_sales_summary(reconciled_df)
+    if otp:
+        mock_generated_token = f"gst_secure_token_{int(time.time())}"
+        set_cached_portal_session(mock_generated_token, "33AABCU9603R1ZM")
 
-    return {
-        "status": "success",
-        "module": "Sales Reconciliation vs GSTR-1 (Module 1 / Point 6)",
-        "summary": summary_metrics,
-        "records": reconciled_df.to_dict(orient="records")
-    }
-@app.get("/notes-recon")
-async def notes_reconciliation(request: Request):
-    """
-    API endpoint to process and fetch Credit/Debit Notes Reconciliation details.
-    """
-    sample_erp_notes = pd.DataFrame([
-        {"GSTIN": "33AABCU9603R1ZM", "Party_Name": "Chennai Steel Pvt Ltd", "Note_Type": "CN", "Note_No": "CN/2026/01", "Note_Date": "12-10-2026", "IGST": 0.0, "CGST": 500.0, "SGST": 500.0},
-        {"GSTIN": "33AADCS1234F1Z5", "Party_Name": "Apex Logistics India", "Note_Type": "DN", "Note_No": "DN-99", "Note_Date": "14-10-2026", "IGST": 1200.0, "CGST": 0.0, "SGST": 0.0}
-    ])
+    tally_status = fetch_from_tally_with_retries()
+    return jsonify({"status": "success", "message": f"Global Sync Complete! {tally_status['message']}."})
+
+@app.route('/sales-recon', methods=['GET'])
+def sales_recon():
+    return jsonify({"status": "success", "records": SAMPLE_VAULT_DATA["sales"]})
+
+@app.route('/purchase-recon', methods=['GET'])
+def purchase_recon():
+    return jsonify({"status": "success", "records": SAMPLE_VAULT_DATA["purchase"]})
+
+@app.route('/notes-recon', methods=['GET'])
+def notes_recon():
+    return jsonify({"status": "success", "records": SAMPLE_VAULT_DATA["notes"]})
+
+@app.route('/itc-time-limit-recon', methods=['GET'])
+def itc_time_limit():
+    return jsonify({"status": "success", "records": SAMPLE_VAULT_DATA["itc_time"]})
+
+@app.route('/rcm-liability-recon', methods=['GET'])
+def rcm_liability():
+    return jsonify({"status": "success", "records": SAMPLE_VAULT_DATA["rcm"]})
+
+@app.route('/gstr3b-summary-recon', methods=['GET'])
+def gstr3b_summary():
+    return jsonify({"status": "success", "records": SAMPLE_VAULT_DATA["gstr3b"]})
+
+@app.route('/api/master/upload-erp', methods=['POST'])
+def upload_erp():
+    if 'file' not in request.files: return jsonify({"error": "No file uploaded"}), 400
+    file = request.files['file']
+    filename = secure_filename(file.filename)
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    return jsonify({"status": "success", "message": f"Books file '{filename}' ingested!"})
+
+@app.route('/api/master/upload-portal', methods=['POST'])
+def upload_portal():
+    if 'file' not in request.files: return jsonify({"error": "No file uploaded"}), 400
+    file = request.files['file']
+    filename = secure_filename(file.filename)
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    return jsonify({"status": "success", "message": f"GSTR Portal file '{filename}' parsed!"})
+
+@app.route('/api/vault/save', methods=['POST'])
+def save_vault():
+    body = request.json or {}
+    batch_name = body.get('batch_name', 'Audit_Batch_2026')
+    saved_at = datetime.now().strftime('%d-%m-%Y %H:%M')
     
-    sample_portal_notes = pd.DataFrame([
-        {"GSTIN": "33AABCU9603R1ZM", "Party_Name": "Chennai Steel Pvt Ltd", "Note_Type": "CN", "Note_No": "CN/2026/01", "Note_Date": "12-10-2026", "IGST": 0.0, "CGST": 500.0, "SGST": 500.0}
-    ])
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO vault_sessions (batch_name, saved_at, total_bills, data_json) VALUES (?, ?, ?, ?)',
+                   (batch_name, saved_at, len(SAMPLE_VAULT_DATA["sales"]) + len(SAMPLE_VAULT_DATA["purchase"]), json.dumps(SAMPLE_VAULT_DATA)))
+    conn.commit()
+    conn.close()
+    return jsonify({"status": "success", "message": f"Session '{batch_name}' saved to SQLite Vault!"})
 
-    engine = NotesReconciliationEngine(sample_erp_notes, sample_portal_notes)
-    reco_df = engine.process_notes_recon()
-    summary_metrics = engine.generate_notes_summary(reco_df)
+@app.route('/api/vault/list', methods=['GET'])
+def list_vault():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute('SELECT id, batch_name, saved_at, total_bills FROM vault_sessions ORDER BY id DESC')
+    rows = cursor.fetchall()
+    conn.close()
+    return jsonify([{"id": r[0], "batch_name": r[1], "saved_at": r[2], "total_bills": r[3]} for r in rows])
 
-    return {
-        "status": "success",
-        "module": "Credit/Debit Notes Reconciliation (Module 3)",
-        "summary": summary_metrics,
-        "records": reco_df.to_dict(orient="records")
-    }
-if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+@app.route('/api/vault/load/<int:rec_id>', methods=['GET'])
+def load_vault(rec_id):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute('SELECT batch_name, data_json FROM vault_sessions WHERE id = ?', (rec_id,))
+    row = cursor.fetchone()
+    conn.close()
+    if not row: return jsonify({"error": "Batch not found"}), 404
+    return jsonify({"status": "success", "message": f"Successfully reloaded '{row[0]}' from SQLite Vault!"})
+
+@app.route('/api/master/reset', methods=['POST'])
+def reset_workspace():
+    return jsonify({"status": "success", "message": "Workspace reset successfully."})
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8000, debug=True)

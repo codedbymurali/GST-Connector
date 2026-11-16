@@ -6,249 +6,238 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
-<body class="bg-[#F8FAFC] text-[#0F172A] min-h-screen selection:bg-blue-600 selection:text-white">
+<body class="bg-[#F8FAFC] text-[#0F172A] min-h-screen selection:bg-blue-600 selection:text-white font-['Inter',sans-serif]">
 
     <div class="flex h-screen overflow-hidden">
         
-        <!-- SIDEBAR NAVIGATION (3 Active Modules) -->
-        <aside class="w-72 bg-slate-900 text-white flex flex-col shadow-xl flex-shrink-0 z-40">
-            <div class="p-6 text-xl font-bold tracking-wider border-b border-slate-800 text-teal-400 flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-teal-500 flex items-center justify-center text-white text-sm font-bold shadow-md">CA</div>
-                <span>CA GST Suite Pro</span>
+        <!-- SIDEBAR NAVIGATION -->
+        <aside id="sidebar" class="w-72 bg-slate-900 text-white flex flex-col shadow-2xl flex-shrink-0 z-40 border-r border-slate-800 transition-all duration-300 ease-in-out relative overflow-hidden">
+            
+            <!-- LOGO HEADER (HIDES COMPLETELY ON COLLAPSE) -->
+            <div id="sidebarHeader" class="p-3.5 border-b border-slate-800 flex items-center justify-between gap-2 bg-slate-950/50 whitespace-nowrap transition-all duration-300 flex-shrink-0">
+                <div class="flex items-center gap-2 flex-shrink-0">
+                    <!-- TOGGLE BUTTON -->
+                    <button onclick="toggleSidebar()" class="w-8 h-8 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-all cursor-pointer flex-shrink-0 active:scale-95" title="Toggle Sidebar">
+                        <svg id="toggleIconSvg" class="w-5 h-5 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="9" y1="3" x2="9" y2="21"></line>
+                            <polyline points="14 15 17 12 14 9"></polyline>
+                        </svg>
+                    </button>
+                    <!-- CA LOGO ICON -->
+                    <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-teal-500 to-emerald-400 flex items-center justify-center text-white text-xs font-bold shadow-lg shadow-teal-500/20 flex-shrink-0">CA</div>
+                </div>
+                <!-- TITLE -->
+                <div id="sidebarTitleWrapper" class="transition-all duration-300 ease-in-out overflow-hidden opacity-100 flex-1 ml-1">
+                    <span class="tracking-tight font-extrabold text-white text-sm">CA GST Suite Pro</span>
+                </div>
             </div>
-            <nav class="flex-1 p-4 space-y-1.5 overflow-y-auto text-xs font-medium">
-                <a href="#" onclick="switchModule('sales')" id="nav_sales" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600 text-white shadow-sm transition">
-                    <span>📈</span> <span>Sales Recon (Mod 1)</span>
+
+            <!-- NAVIGATION LINKS (ALL 7 MODULE ICONS PERFECTLY FITTING) -->
+            <nav class="flex-1 px-3 py-3 space-y-2 overflow-hidden text-xs font-medium flex flex-col justify-between">
+                <a href="#" onclick="switchModule('home')" id="nav_home" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition-all duration-200 hover:bg-blue-700 whitespace-nowrap flex-shrink-0">
+                    <span class="text-base flex-shrink-0 w-6 text-center">🏠</span> 
+                    <span class="nav-text transition-all duration-300 opacity-100">Home (Master Hub)</span>
                 </a>
-                <a href="#" onclick="switchModule('purchase')" id="nav_purchase" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 text-slate-300 transition">
-                    <span>🛒</span> <span>Purchase Recon (Mod 2)</span>
+                <a href="#" onclick="switchModule('sales')" id="nav_sales" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all duration-200 whitespace-nowrap flex-shrink-0">
+                    <span class="text-base flex-shrink-0 w-6 text-center">📈</span> 
+                    <span class="nav-text transition-all duration-300 opacity-100">Sales Recon (Mod 1)</span>
                 </a>
-                <a href="#" onclick="switchModule('notes')" id="nav_notes" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 text-slate-300 transition">
-                    <span>📑</span> <span>Credit/Debit Notes (Mod 3)</span>
+                <a href="#" onclick="switchModule('purchase')" id="nav_purchase" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all duration-200 whitespace-nowrap flex-shrink-0">
+                    <span class="text-base flex-shrink-0 w-6 text-center">🛒</span> 
+                    <span class="nav-text transition-all duration-300 opacity-100">Purchase Recon (Mod 2)</span>
+                </a>
+                <a href="#" onclick="switchModule('notes')" id="nav_notes" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all duration-200 whitespace-nowrap flex-shrink-0">
+                    <span class="text-base flex-shrink-0 w-6 text-center">📑</span> 
+                    <span class="nav-text transition-all duration-300 opacity-100">Credit/Debit Notes (Mod 3)</span>
+                </a>
+                <a href="#" onclick="switchModule('itc_time')" id="nav_itc_time" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all duration-200 whitespace-nowrap flex-shrink-0">
+                    <span class="text-base flex-shrink-0 w-6 text-center">⏳</span> 
+                    <span class="nav-text transition-all duration-300 opacity-100">ITC 16(4) Validation (Mod 4)</span>
+                </a>
+                <a href="#" onclick="switchModule('rcm')" id="nav_rcm" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all duration-200 whitespace-nowrap flex-shrink-0">
+                    <span class="text-base flex-shrink-0 w-6 text-center">🔄</span> 
+                    <span class="nav-text transition-all duration-300 opacity-100">RCM Liability Matcher (Mod 5)</span>
+                </a>
+                <a href="#" onclick="switchModule('gstr3b')" id="nav_gstr3b" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all duration-200 whitespace-nowrap flex-shrink-0">
+                    <span class="text-base flex-shrink-0 w-6 text-center">📊</span> 
+                    <span class="nav-text transition-all duration-300 opacity-100">GSTR-3B vs 2B Summary (Mod 6)</span>
                 </a>
             </nav>
-            <div class="p-4 border-t border-slate-800 text-[11px] text-slate-500 bg-slate-950">
-                Secure Local Client (127.0.0.1)
+
+            <!-- FOOTER -->
+            <div id="sidebarFooter" class="p-3 border-t border-slate-800 text-[11px] text-slate-500 bg-slate-950 flex justify-between items-center overflow-hidden whitespace-nowrap flex-shrink-0 transition-all duration-300">
+                <div id="footerTextWrapper" class="transition-all duration-300 opacity-100">
+                    <span>Secure Engine</span>
+                </div>
             </div>
         </aside>
 
         <!-- MAIN VIEWPORT CONTAINER -->
-        <div class="flex-1 flex flex-col overflow-y-auto">
+        <div class="flex-1 flex flex-col overflow-y-auto bg-[#F8FAFC]">
 
             <!-- TOP TELEMETRY NAVBAR -->
-            <header class="border-b border-[#E2E8F0] bg-white sticky top-0 z-30 shadow-sm">
-                <div class="max-w-7xl mx-auto px-6 py-3.5 flex flex-wrap justify-between items-center gap-4 w-full">
-                    <div class="flex items-center gap-3.5">
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <h1 id="headerTitle" class="text-base font-bold tracking-tight text-[#0F172A]">Module 1: Sales Reconciliation vs GSTR-1</h1>
-                                <span class="text-[10px] uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-0.5 rounded-full font-bold">Enterprise Desk</span>
-                            </div>
-                            <p class="text-xs text-[#64748B] font-medium">Live Tally Prime Connector & GST Portal Forensic Reconciliation</p>
+            <header class="border-b border-[#E2E8F0] bg-white/80 backdrop-blur-xl sticky top-0 z-30 shadow-sm">
+                <div class="max-w-7xl mx-auto px-6 py-3.5 flex justify-between items-center w-full">
+                    <div>
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-3 h-3 rounded-full bg-teal-500 shadow-lg shadow-teal-500/50 animate-pulse"></span>
+                            <h1 id="headerTitle" class="text-base font-extrabold tracking-tight text-[#0F172A]">Home: Master Ingestion & Global Sync Hub</h1>
                         </div>
+                        <p id="headerSubtitle" class="text-[11px] text-[#64748B] font-medium mt-0.5">Tally API Connectors, Portal Credentials, File Upload & SQLite Vault</p>
                     </div>
 
-                    <div class="flex items-center gap-2.5 text-xs">
-                        <button onclick="openVaultModal()" class="bg-white hover:bg-[#F1F5F9] text-[#475569] font-semibold px-3.5 py-2 rounded-xl border border-[#E2E8F0] shadow-sm transition flex items-center gap-1.5">
-                            <span>📂</span> <span>Vault History</span>
-                        </button>
-                        <button onclick="saveCurrentToVault()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-xl shadow-sm transition flex items-center gap-1.5">
-                            <span>💾</span> <span>Save to Vault</span>
-                        </button>
-                        <button onclick="quickDemoBoth()" class="bg-[#0F172A] hover:bg-slate-800 text-white font-semibold px-4 py-2 rounded-xl shadow-sm transition flex items-center gap-1.5">
-                            <span>⚡ Load Sample Data</span>
-                        </button>
-                        <button onclick="resetAll()" class="bg-white hover:bg-[#FEF2F2] text-[#991B1B] font-semibold px-3 py-2 rounded-xl border border-[#E2E8F0] transition">
-                            🗑 Reset
-                        </button>
+                    <!-- REALTIME STATUS & CLEAN ACTION BUTTONS -->
+                    <div class="flex items-center gap-2.5 text-xs flex-shrink-0">
+                        <!-- Tally Status Badge -->
+                        <div id="tallyStatusBadge" class="flex items-center gap-1.5 bg-rose-50 border border-rose-200 px-3 py-2 rounded-xl font-semibold text-rose-700 shadow-inner">
+                            <span class="w-2 h-2 rounded-full bg-rose-500" id="tallyDot"></span>
+                            <span id="tallyText">Tally Disconnected</span>
+                        </div>
+                        
+                        <!-- Portal Status Badge -->
+                        <div id="portalStatusBadge" class="flex items-center gap-1.5 bg-rose-50 border border-rose-200 px-3 py-2 rounded-xl font-semibold text-rose-700 shadow-inner">
+                            <span class="w-2 h-2 rounded-full bg-rose-500" id="portalDot"></span>
+                            <span id="portalText">Portal Disconnected</span>
+                        </div>
+
+                        <button onclick="openVaultModal()" class="bg-white hover:bg-slate-50 text-slate-700 font-semibold px-3.5 py-2 rounded-xl border border-slate-200 shadow-sm transition active:scale-95">📂 Vault</button>
+                        <button onclick="saveCurrentToVault()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-xl shadow-md transition active:scale-95">💾 Save</button>
+                        <button onclick="resetWorkspace()" class="bg-white hover:bg-rose-50 text-rose-700 font-semibold px-3.5 py-2 rounded-xl border border-rose-200 shadow-sm transition active:scale-95 flex items-center gap-1.5"><span>🗑️</span> Reset</button>
                     </div>
                 </div>
             </header>
 
             <main class="max-w-7xl mx-auto px-6 py-8 space-y-6 w-full">
-                <!-- DUAL CONNECTOR HUB -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- SOURCE 1 CARD: ERP / BOOKS -->
-                    <div class="bg-white border border-[#E2E8F0] rounded-2xl p-6 shadow-sm space-y-4">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200">Source 1 • Books / Tally</span>
-                                <h2 class="text-sm font-bold mt-2 text-[#0F172A]">Books Register Connector</h2>
+                
+                <!-- HOME VIEW (PRODUCTION READY CREDENTIALS) -->
+                <div id="homeView" class="space-y-6">
+                    <div class="bg-white border border-[#E2E8F0] rounded-2xl p-6 shadow-sm space-y-6">
+                        <div class="border-b border-[#E2E8F0] pb-4">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-teal-700 bg-teal-50 px-3 py-1 rounded-full border border-teal-200/60 shadow-sm">Secure Authentication Hub</span>
+                            <h2 class="text-base font-bold mt-3 text-[#0F172A]">1. Live API Connectors (Tally Prime & GST Portal 2FA Auth)</h2>
+                            <p class="text-xs text-[#64748B] mt-1">Enter official Tally ODBC endpoint and GST Portal credentials with OTP verification flow.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Tally Secure Credentials -->
+                            <div class="bg-[#F8FAFC] border border-[#E2E8F0] p-4 rounded-xl space-y-3 shadow-inner">
+                                <h3 class="text-xs font-bold text-[#0F172A] flex items-center gap-2"><span>📈</span> Tally Prime ERP Credentials</h3>
+                                <div>
+                                    <label class="text-[11px] font-semibold text-slate-500">Tally ODBC URL & Port</label>
+                                    <input id="tallyUrl" type="text" value="http://localhost:9000" class="w-full mt-1 bg-white border border-[#E2E8F0] rounded-xl px-3.5 py-2 text-xs font-mono outline-none focus:border-blue-600" />
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-semibold text-slate-500">Company Name</label>
+                                    <input id="tallyCompany" type="text" value="Murali_Enterprises_2026" class="w-full mt-1 bg-white border border-[#E2E8F0] rounded-xl px-3.5 py-2 text-xs outline-none focus:border-blue-600" />
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-semibold text-slate-500">Tally Security Password (Optional)</label>
+                                    <input id="tallyPass" type="password" placeholder="Leave blank if none" class="w-full mt-1 bg-white border border-[#E2E8F0] rounded-xl px-3.5 py-2 text-xs outline-none focus:border-blue-600" />
+                                </div>
                             </div>
-                            <span id="erpBadge" class="text-xs bg-[#F1F5F9] text-[#64748B] px-3 py-1 rounded-full border border-[#E2E8F0] font-medium">Not Connected</span>
-                        </div>
 
-                        <div class="relative grid grid-cols-3 bg-[#F8FAFC] p-1.5 rounded-xl border border-[#E2E8F0] text-xs font-semibold text-[#475569]">
-                            <div id="erpSlider" class="absolute top-1.5 bottom-1.5 left-1.5 w-[calc(33.33%-4px)] bg-blue-600 rounded-lg shadow-sm transition-all duration-300"></div>
-                            <button onclick="switchErpTab('api')" id="erpTab_api" class="relative z-10 py-1.5 rounded-lg text-white text-center">⚡ Tally API</button>
-                            <button onclick="switchErpTab('upload')" id="erpTab_upload" class="relative z-10 py-1.5 rounded-lg hover:text-[#0F172A] text-center">📂 Upload</button>
-                            <button onclick="switchErpTab('sample')" id="erpTab_sample" class="relative z-10 py-1.5 rounded-lg hover:text-[#0F172A] text-center">🧪 Sample</button>
-                        </div>
-
-                        <div id="erpPane_api" class="space-y-3 text-xs">
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                                <input id="erpUrl" type="text" placeholder="Tally URL (localhost:9000)" class="md:col-span-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-blue-600 font-mono" />
-                                <input id="erpKey" type="text" placeholder="API Key" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-blue-600" />
-                                <input id="erpSecret" type="password" placeholder="API Secret" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-blue-600" />
-                                <input id="erpMonth" type="month" value="2026-10" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-blue-600 font-mono" />
+                            <!-- GST Portal Secure Credentials with OTP flow -->
+                            <div class="bg-[#F8FAFC] border border-[#E2E8F0] p-4 rounded-xl space-y-3 shadow-inner">
+                                <h3 class="text-xs font-bold text-[#0F172A] flex items-center gap-2"><span>🏛️</span> GST Govt Portal (2FA Auth)</h3>
+                                <div>
+                                    <label class="text-[11px] font-semibold text-slate-500">15-Digit GSTIN</label>
+                                    <input id="portalGstin" type="text" value="33AABCU9603R1ZM" class="w-full mt-1 bg-white border border-[#E2E8F0] rounded-xl px-3.5 py-2 text-xs font-mono outline-none focus:border-blue-600" />
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-semibold text-slate-500">Portal Username</label>
+                                    <input id="portalUser" type="text" value="MuraliCA_Tax" class="w-full mt-1 bg-white border border-[#E2E8F0] rounded-xl px-3.5 py-2 text-xs outline-none focus:border-blue-600" />
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-semibold text-slate-500">Portal Password</label>
+                                    <input id="portalPass" type="password" value="********" class="w-full mt-1 bg-white border border-[#E2E8F0] rounded-xl px-3.5 py-2 text-xs outline-none focus:border-blue-600" />
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-semibold text-slate-500">Return Period (MMYYYY)</label>
+                                    <input id="portalPeriod" type="text" value="102026" class="w-full mt-1 bg-white border border-[#E2E8F0] rounded-xl px-3.5 py-2 text-xs font-mono outline-none focus:border-blue-600" />
+                                </div>
                             </div>
-                            <button onclick="fetchErpLive()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl shadow-sm transition">
-                                ⚡ Fetch Vouchers from Tally Books
-                            </button>
                         </div>
 
-                        <div id="erpPane_upload" class="hidden space-y-3 text-xs">
-                            <input type="file" id="erpFileInput" accept=".xlsx,.xls,.csv,.xml" class="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-2.5 text-[#475569] file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 cursor-pointer" />
-                            <button onclick="uploadErpFile()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl transition">
-                                📤 Upload Register File
-                            </button>
-                        </div>
-
-                        <div id="erpPane_sample" class="hidden space-y-3 text-xs">
-                            <p class="text-[#64748B]">Load sample invoices into memory.</p>
-                            <button onclick="loadErpSample()" class="w-full bg-[#F1F5F9] hover:bg-[#E2E8F0] border border-[#E2E8F0] text-[#0F172A] font-semibold py-2.5 rounded-xl transition">
-                                🧪 Load Sample Register Data
-                            </button>
-                        </div>
-
-                        <div class="pt-3 border-t border-[#E2E8F0] flex justify-between text-xs text-[#64748B] font-medium">
-                            <span>Loaded Bills: <strong id="erpCount" class="text-[#0F172A] font-mono">0</strong></span>
-                            <span>Total Books Tax: <strong id="erpTax" class="text-blue-600 font-mono">₹ 0.00</strong></span>
-                        </div>
-                    </div>
-
-                    <!-- SOURCE 2 CARD: GST PORTAL -->
-                    <div class="bg-white border border-[#E2E8F0] rounded-2xl p-6 shadow-sm space-y-4">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">Source 2 • GST Portal (gov.in)</span>
-                                <h2 class="text-sm font-bold mt-2 text-[#0F172A]">GSTR Return / Portal Connector</h2>
-                            </div>
-                            <span id="portalBadge" class="text-xs bg-[#F1F5F9] text-[#64748B] px-3 py-1 rounded-full border border-[#E2E8F0] font-medium">Not Connected</span>
-                        </div>
-
-                        <div class="relative grid grid-cols-3 bg-[#F8FAFC] p-1.5 rounded-xl border border-[#E2E8F0] text-xs font-semibold text-[#475569]">
-                            <div id="portalSlider" class="absolute top-1.5 bottom-1.5 left-1.5 w-[calc(33.33%-4px)] bg-emerald-600 rounded-lg shadow-sm transition-all duration-300"></div>
-                            <button onclick="switchPortalTab('api')" id="portalTab_api" class="relative z-10 py-1.5 rounded-lg text-white text-center">⚡ Portal API</button>
-                            <button onclick="switchPortalTab('upload')" id="portalTab_upload" class="relative z-10 py-1.5 rounded-lg hover:text-[#0F172A] text-center">📂 Upload Portal</button>
-                            <button onclick="switchPortalTab('sample')" id="portalTab_sample" class="relative z-10 py-1.5 rounded-lg hover:text-[#0F172A] text-center">🧪 Sample</button>
-                        </div>
-
-                        <div id="portalPane_api" class="space-y-3 text-xs">
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                                <input id="portalUsername" type="text" placeholder="GST Username" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-emerald-600" />
-                                <input id="portalPassword" type="password" placeholder="Password" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-emerald-600" />
-                                <input id="portalPeriod" type="text" value="102026" placeholder="MMYYYY" class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#0F172A] focus:outline-none focus:border-emerald-600 font-mono" />
-                            </div>
-                            <button onclick="fetchPortalLive()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl transition">
-                                ⚡ Fetch Data Directly from Portal
-                            </button>
-                        </div>
-
-                        <div id="portalPane_upload" class="hidden space-y-3 text-xs">
-                            <input type="file" id="portalFileInput" accept=".json,.xlsx,.xls,.csv" class="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-2.5 text-[#475569] file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 cursor-pointer" />
-                            <button onclick="uploadPortalFile()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl transition">
-                                📤 Upload Official Return JSON
-                            </button>
-                        </div>
-
-                        <div id="portalPane_sample" class="hidden space-y-3 text-xs">
-                            <p class="text-[#64748B]">Load sample portal invoices.</p>
-                            <button onclick="loadPortalSample()" class="w-full bg-[#F1F5F9] hover:bg-[#E2E8F0] border border-[#E2E8F0] text-[#0F172A] font-semibold py-2.5 rounded-xl transition">
-                                🧪 Load Sample Portal Data
-                            </button>
-                        </div>
-
-                        <div class="pt-3 border-t border-[#E2E8F0] flex justify-between text-xs text-[#64748B] font-medium">
-                            <span>Loaded Portal Bills: <strong id="portalCount" class="text-[#0F172A] font-mono">0</strong></span>
-                            <span>Total Portal Tax: <strong id="portalTax" class="text-emerald-600 font-mono">₹ 0.00</strong></span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- STATUS SUMMARY CARDS -->
-                <div id="statusGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4"></div>
-
-                <!-- ACTION TOOLBAR -->
-                <div class="bg-white border border-[#E2E8F0] rounded-2xl p-4 flex flex-wrap justify-between items-center gap-4 shadow-sm">
-                    <div class="flex flex-wrap items-center gap-3 flex-1 min-w-[300px]">
-                        <div class="bg-[#F8FAFC] p-1.5 rounded-xl border border-[#E2E8F0] flex text-xs font-semibold text-[#475569]">
-                            <button onclick="setViewMode('bills')" id="viewBtn_bills" class="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white shadow-sm transition">📄 Bill-wise</button>
-                            <button onclick="setViewMode('parties')" id="viewBtn_parties" class="px-3.5 py-1.5 rounded-lg hover:text-[#0F172A] transition">🏢 Party-wise</button>
-                        </div>
-
-                        <div class="relative flex-1 min-w-[240px]">
-                            <input id="searchBox" oninput="renderActiveView()" type="text" placeholder="🔍 Search GSTIN, Supplier, Inv No..." class="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3.5 py-2 text-xs text-[#0F172A] focus:outline-none focus:border-blue-600" />
-                        </div>
-
-                        <div class="flex items-center gap-2 text-xs bg-[#F8FAFC] border border-[#E2E8F0] px-3 py-2 rounded-xl text-[#475569]">
-                            <span>±₹</span>
-                            <input id="tolInput" type="number" value="2" step="1" onchange="reRunWithTolerance()" class="w-10 bg-transparent text-[#0F172A] font-bold font-mono text-center focus:outline-none" />
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-2 text-xs font-semibold">
-                        <button onclick="exportFile('xlsx')" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 px-3.5 py-2 rounded-xl transition flex items-center gap-1.5">
-                            <span>📊</span> <span>Export Excel</span>
+                        <button onclick="triggerPortalOtpFlow()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-blue-600/20 transition-all text-xs flex items-center justify-center gap-2">
+                            <span>🔐 Request GST Portal OTP & Sync Live Data</span>
                         </button>
-                        <button onclick="exportFile('csv')" class="bg-white hover:bg-[#F1F5F9] text-[#475569] border border-[#E2E8F0] px-3 py-2 rounded-xl transition">CSV</button>
-                        <button onclick="exportFile('json')" class="bg-white hover:bg-[#F1F5F9] text-[#475569] border border-[#E2E8F0] px-3 py-2 rounded-xl transition">JSON</button>
+                    </div>
+
+                    <!-- File Upload Gateway Backup -->
+                    <div class="bg-white border border-[#E2E8F0] rounded-2xl p-6 shadow-sm space-y-6">
+                        <div class="border-b border-[#E2E8F0] pb-4">
+                            <h2 class="text-base font-bold text-[#0F172A]">2. Exported Data Upload Gateway (Excel / CSV / JSON Backup)</h2>
+                            <p class="text-xs text-[#64748B] mt-1">If portal live OTP/API traffic is high, upload official JSON/Excel dumps instantly.</p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-[#F8FAFC] border border-[#E2E8F0] p-4 rounded-xl space-y-3">
+                                <label class="text-xs font-bold text-[#0F172A]">Upload Books Register</label>
+                                <input type="file" id="erpFile" accept=".xlsx,.xls,.csv,.json" class="w-full text-xs bg-white border border-[#E2E8F0] rounded-xl p-2 cursor-pointer" />
+                                <button onclick="uploadErpFile()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2 rounded-xl text-xs transition">📤 Upload Books</button>
+                            </div>
+                            <div class="bg-[#F8FAFC] border border-[#E2E8F0] p-4 rounded-xl space-y-3">
+                                <label class="text-xs font-bold text-[#0F172A]">Upload GSTR Portal Return File</label>
+                                <input type="file" id="portalFile" accept=".json,.xlsx,.xls,.csv" class="w-full text-xs bg-white border border-[#E2E8F0] rounded-xl p-2 cursor-pointer" />
+                                <button onclick="uploadPortalFile()" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-2 rounded-xl text-xs transition">📤 Upload Portal File</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- DATA TABLE CONTAINER (With id="tableHead" added) -->
-                <div class="bg-white border border-[#E2E8F0] rounded-2xl overflow-hidden shadow-sm">
-                    <div id="billsTableWrap" class="overflow-x-auto">
-                        <table class="w-full text-left text-xs">
-                            <thead id="tableHead" class="bg-[#F8FAFC] text-[#475569] uppercase tracking-wider font-semibold border-b border-[#E2E8F0]">
-                                <tr>
-                                    <th class="p-3.5">Customer GSTIN</th>
-                                    <th class="p-3.5">Customer Name</th>
-                                    <th class="p-3.5">ERP Inv No</th>
-                                    <th class="p-3.5">GSTR-1 Inv No</th>
-                                    <th class="p-3.5">Date</th>
-                                    <th class="p-3.5 text-right">ERP Tax (₹)</th>
-                                    <th class="p-3.5 text-right">GSTR-1 Tax (₹)</th>
-                                    <th class="p-3.5 text-right">Diff (₹)</th>
-                                    <th class="p-3.5">Status</th>
-                                    <th class="p-3.5">Suggested Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="billsTbody" class="divide-y divide-[#E2E8F0]"></tbody>
-                        </table>
+                <!-- RECONCILIATION VIEW -->
+                <div id="reconView" class="hidden space-y-6">
+                    <div id="statusCardsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4"></div>
+                    <div class="bg-white border border-[#E2E8F0] rounded-2xl p-4 flex flex-wrap justify-between items-center gap-4 shadow-sm relative z-20">
+                        <div class="flex items-center gap-3 flex-1 min-w-[280px]">
+                            <input id="searchBox" oninput="renderTableData()" type="text" placeholder="🔍 Search records, GSTIN, parties..." class="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-blue-600 shadow-inner" />
+                            <div id="moduleSpecificControls" class="flex items-center gap-2"></div>
+                        </div>
+                        <div class="flex items-center gap-3 text-xs">
+                            <div id="moduleSortContainer" class="relative"></div>
+                            <button onclick="exportReport()" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 px-4 py-2.5 rounded-xl font-semibold shadow-sm transition">📊 Export Report</button>
+                        </div>
                     </div>
-
-                    <div id="partiesTableWrap" class="hidden overflow-x-auto">
-                        <table class="w-full text-left text-xs">
-                            <thead class="bg-[#F8FAFC] text-[#475569] uppercase tracking-wider font-semibold border-b border-[#E2E8F0]">
-                                <tr>
-                                    <th class="p-3.5">Supplier GSTIN</th>
-                                    <th class="p-4">Supplier Legal / Trade Name</th>
-                                    <th class="p-3.5 text-center">Total Invoices</th>
-                                    <th class="p-3.5 text-right">Total ERP Tax (₹)</th>
-                                    <th class="p-3.5 text-right">Total Portal Tax (₹)</th>
-                                    <th class="p-3.5 text-right">Net Tax Difference (₹)</th>
-                                    <th class="p-3.5">Party Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="partiesTbody" class="divide-y divide-[#E2E8F0]"></tbody>
-                        </table>
+                    <div class="bg-white border border-[#E2E8F0] rounded-2xl overflow-hidden shadow-sm">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead id="tableHead" class="bg-[#F8FAFC] text-[#475569] uppercase tracking-wider font-semibold border-b border-[#E2E8F0]"></thead>
+                                <tbody id="billsTbody" class="divide-y divide-[#E2E8F0]"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </main>
         </div>
+    </div>
 
+    <!-- OTP VERIFICATION MODAL POPUP -->
+    <div id="otpModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white border border-[#E2E8F0] rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
+            <div class="border-b border-[#E2E8F0] pb-3">
+                <h3 class="text-sm font-bold text-[#0F172A]">🔐 GST Portal 2FA Verification</h3>
+                <p class="text-xs text-[#64748B] mt-0.5">OTP has been sent to the registered mobile / email linked with GSTIN.</p>
+            </div>
+            <div class="space-y-3">
+                <label class="text-xs font-semibold text-slate-700">Enter 6-Digit OTP</label>
+                <input id="otpInput" type="text" maxlength="6" placeholder="123456" class="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm font-mono tracking-widest text-center font-bold outline-none focus:border-blue-600 shadow-inner" />
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button onclick="verifyOtpAndSync()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl text-xs shadow-md transition">Verify & Authenticate</button>
+                <button onclick="closeOtpModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2.5 rounded-xl text-xs transition">Cancel</button>
+            </div>
+        </div>
     </div>
 
     <!-- VAULT HISTORY MODAL -->
     <div id="vaultModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white border border-[#E2E8F0] rounded-2xl max-w-2xl w-full p-6 shadow-xl space-y-4">
+        <div class="bg-white border border-[#E2E8F0] rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4">
             <div class="flex justify-between items-center border-b border-[#E2E8F0] pb-3">
                 <div>
                     <h3 class="text-sm font-bold text-[#0F172A]">📂 SQLite Reconciliation Vault</h3>
-                    <p class="text-xs text-[#64748B]">Select any previously saved month/batch to reload</p>
+                    <p class="text-xs text-[#64748B]">Select any previously saved batch to reload into workspace</p>
                 </div>
-                <button onclick="closeVaultModal()" class="text-[#64748B] hover:text-[#0F172A] font-bold text-sm px-2.5 py-1 rounded-lg bg-[#F1F5F9]">✕</button>
+                <button onclick="closeVaultModal()" class="text-[#64748B] font-bold text-sm px-2.5 py-1 rounded-xl bg-[#F1F5F9]">✕</button>
             </div>
             <div id="vaultList" class="space-y-2.5 max-h-96 overflow-y-auto pr-1">
                 <p class="text-xs text-[#64748B] text-center py-6">Loading vault history...</p>
@@ -257,369 +246,479 @@
     </div>
 
     <script>
-        let appState = { rows: [], party_summary: [] };
-        let activeStatus = 'ALL';
-        let viewMode = 'bills';
-        let activeModule = 'sales';
+        let currentModule = 'home';
+        let moduleData = { records: [], summary: {} };
+        let activeStatusFilter = 'EXCEPTIONS_ONLY';
+        let currentSortValue = 'default';
+        let currentNoteTypeValue = 'ALL';
+        let currentFyValue = 'ALL';
 
         function formatINR(val) {
             const num = typeof val === 'number' && !isNaN(val) ? val : 0;
             return '₹ ' + num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
-        function switchErpTab(mode) {
-            const slider = document.getElementById('erpSlider');
-            if (mode === 'api') slider.style.transform = 'translateX(0%)';
-            else if (mode === 'upload') slider.style.transform = 'translateX(100%)';
-            else if (mode === 'sample') slider.style.transform = 'translateX(200%)';
+        async function switchModule(mod) {
+            currentModule = mod;
+            activeStatusFilter = 'EXCEPTIONS_ONLY';
+            currentSortValue = 'default';
+            currentNoteTypeValue = 'ALL';
+            currentFyValue = 'ALL';
 
-            ['api', 'upload', 'sample'].forEach(m => {
-                document.getElementById('erpPane_' + m).classList.toggle('hidden', m !== mode);
-            });
-        }
-
-        function switchPortalTab(mode) {
-            const slider = document.getElementById('portalSlider');
-            if (mode === 'api') slider.style.transform = 'translateX(0%)';
-            else if (mode === 'upload') slider.style.transform = 'translateX(100%)';
-            else if (mode === 'sample') slider.style.transform = 'translateX(200%)';
-
-            ['api', 'upload', 'sample'].forEach(m => {
-                document.getElementById('portalPane_' + m).classList.toggle('hidden', m !== mode);
-            });
-        }
-
-        function setViewMode(mode) {
-            viewMode = mode;
-            document.getElementById('billsTableWrap').classList.toggle('hidden', mode !== 'bills');
-            document.getElementById('partiesTableWrap').classList.toggle('hidden', mode !== 'parties');
-            document.getElementById('viewBtn_bills').className = mode === 'bills' ? 'px-3.5 py-1.5 rounded-lg bg-blue-600 text-white shadow-sm transition' : 'px-3.5 py-1.5 rounded-lg hover:text-[#0F172A] transition';
-            document.getElementById('viewBtn_parties').className = mode === 'parties' ? 'px-3.5 py-1.5 rounded-lg bg-blue-600 text-white shadow-sm transition' : 'px-3.5 py-1.5 rounded-lg hover:text-[#0F172A] transition';
-            renderActiveView();
-        }
-
-        // --- MODULE SWITCHER ---
-        async function switchModule(modName) {
-            activeModule = modName;
-            
-            // Reset sidebar active classes
             document.querySelectorAll('aside nav a').forEach(el => {
-                el.className = "flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 text-slate-300 transition";
+                el.className = "flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all duration-200";
             });
 
-            if (modName === 'sales') {
-                document.getElementById('nav_sales').className = "flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600 text-white shadow-sm transition";
+            document.getElementById('homeView').classList.add('hidden');
+            document.getElementById('reconView').classList.add('hidden');
+            renderModuleControls(mod);
+
+            if (mod === 'home') {
+                document.getElementById('nav_home').className = "flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600 text-white shadow-lg transition-all";
+                document.getElementById('headerTitle').innerText = "Home: Master Ingestion & Global Sync Hub";
+                document.getElementById('headerSubtitle').innerText = "Tally API Connectors, Portal Credentials, File Upload & SQLite Vault";
+                document.getElementById('homeView').classList.remove('hidden');
+            } else if (mod === 'sales') {
+                document.getElementById('nav_sales').className = "flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600 text-white shadow-lg transition-all";
                 document.getElementById('headerTitle').innerText = "Module 1: Sales Reconciliation vs GSTR-1";
-                await loadSalesReconData();
-            } 
-            else if (modName === 'purchase') {
-                document.getElementById('nav_purchase').className = "flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600 text-white shadow-sm transition";
-                document.getElementById('headerTitle').innerText = "Module 2: Purchase Reconciliation & ITC Eligibility u/s 17(5)";
-                await loadPurchaseReconData();
-            }
-            else if (modName === 'notes') {
-                document.getElementById('nav_notes').className = "flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600 text-white shadow-sm transition";
-                document.getElementById('headerTitle').innerText = "Module 3: Credit / Debit Notes Reconciliation & Amendments";
-                await loadNotesReconData();
-            }
-        }
-
-        // Dedicated Loader for Module 1 (Sales)
-        async function loadSalesReconData() {
-            try {
-                const res = await fetch('/sales-recon');
-                const data = await res.json();
-                
-                if (data.status === 'success') {
-                    appState = { rows: data.records, party_summary: [] };
-                    const thead = document.getElementById('tableHead');
-                    
-                    thead.innerHTML = `
-                        <tr>
-                            <th class="p-3.5">Customer GSTIN</th>
-                            <th class="p-3.5">Customer Name</th>
-                            <th class="p-3.5">ERP Invoice</th>
-                            <th class="p-3.5">GSTR-1 Invoice</th>
-                            <th class="p-3.5">Date</th>
-                            <th class="p-3.5 text-right">ERP Tax (₹)</th>
-                            <th class="p-3.5 text-right">GSTR-1 Tax (₹)</th>
-                            <th class="p-3.5 text-right">Difference (₹)</th>
-                            <th class="p-3.5">Status</th>
-                            <th class="p-3.5">Action / Remarks</th>
-                        </tr>
-                    `;
-
-                    document.getElementById('erpCount').innerText = data.records.length;
-                    document.getElementById('erpTax').innerText = formatINR(data.summary.erp_tax || 0);
-                    document.getElementById('erpBadge').innerText = "Sales Register Loaded";
-                    document.getElementById('erpBadge').className = 'text-xs bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200 font-medium';
-
-                    document.getElementById('portalCount').innerText = data.records.length;
-                    document.getElementById('portalTax').innerText = formatINR(data.summary.gstr1_tax || 0);
-                    document.getElementById('portalBadge').innerText = "GSTR-1 Portal Loaded";
-                    document.getElementById('portalBadge').className = 'text-xs bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200 font-medium';
-
-                    renderStatusCards();
-                    renderActiveView();
-                }
-            } catch (err) {
-                console.error("Failed to load sales recon:", err);
+                document.getElementById('headerSubtitle').innerText = "Cross-matching Tally sales registers against GSTR-1 filings with automatic tax variance tolerances.";
+                document.getElementById('reconView').classList.remove('hidden');
+                await loadDepartmentData('/sales-recon', 'sales');
+            } else if (mod === 'purchase') {
+                document.getElementById('nav_purchase').className = "flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600 text-white shadow-lg transition-all";
+                document.getElementById('headerTitle').innerText = "Module 2: Purchase Reconciliation & ITC u/s 17(5)";
+                document.getElementById('headerSubtitle').innerText = "Validating input tax credit claims against GSTR-2B with strict Section 17(5) blocking rules.";
+                document.getElementById('reconView').classList.remove('hidden');
+                await loadDepartmentData('/purchase-recon', 'purchase');
+            } else if (mod === 'notes') {
+                document.getElementById('nav_notes').className = "flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600 text-white shadow-lg transition-all";
+                document.getElementById('headerTitle').innerText = "Module 3: Credit / Debit Notes Reconciliation";
+                document.getElementById('headerSubtitle').innerText = "Reconciling commercial and financial credit/debit notes between books and portal returns.";
+                document.getElementById('reconView').classList.remove('hidden');
+                await loadDepartmentData('/notes-recon', 'notes');
+            } else if (mod === 'itc_time') {
+                document.getElementById('nav_itc_time').className = "flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600 text-white shadow-lg transition-all";
+                document.getElementById('headerTitle').innerText = "Module 4: ITC 16(4) Time-Limit Validation Engine";
+                document.getElementById('headerSubtitle').innerText = "Checking statutory time limits and due dates for eligible input tax credit claims.";
+                document.getElementById('reconView').classList.remove('hidden');
+                await loadDepartmentData('/itc-time-limit-recon', 'itc_time');
+            } else if (mod === 'rcm') {
+                document.getElementById('nav_rcm').className = "flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600 text-white shadow-lg transition-all";
+                document.getElementById('headerTitle').innerText = "Module 5: RCM Liability Matcher";
+                document.getElementById('headerSubtitle').innerText = "Matching reverse charge mechanism tax liabilities and portal auto-populations.";
+                document.getElementById('reconView').classList.remove('hidden');
+                await loadDepartmentData('/rcm-liability-recon', 'rcm');
+            } else if (mod === 'gstr3b') {
+                document.getElementById('nav_gstr3b').className = "flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600 text-white shadow-lg transition-all";
+                document.getElementById('headerTitle').innerText = "Module 6: GSTR-3B vs 2B Summary Dashboard";
+                document.getElementById('headerSubtitle').innerText = "Comparing GSTR-3B tax heads against GSTR-2B eligible ITC to catch under-claimed variances.";
+                document.getElementById('reconView').classList.remove('hidden');
+                await loadDepartmentData('/gstr3b-summary-recon', 'gstr3b');
             }
         }
 
-        // Dedicated Loader for Module 2 (Purchase & ITC)
-        async function loadPurchaseReconData() {
-            try {
-                const res = await fetch('/purchase-recon');
-                const data = await res.json();
-                
-                if (data.status === 'success') {
-                    appState = { rows: data.records, party_summary: [] };
-                    const thead = document.getElementById('tableHead');
-                    
-                    thead.innerHTML = `
-                        <tr>
-                            <th class="p-3.5">Supplier GSTIN</th>
-                            <th class="p-3.5">Supplier Name</th>
-                            <th class="p-3.5">Invoice No</th>
-                            <th class="p-3.5">Date</th>
-                            <th class="p-3.5">Description</th>
-                            <th class="p-3.5 text-right">Taxable Value (₹)</th>
-                            <th class="p-3.5 text-right">Total Tax (₹)</th>
-                            <th class="p-3.5">ITC Eligibility u/s 17(5)</th>
-                            <th class="p-3.5">Action / Rule Applied</th>
-                        </tr>
-                    `;
+        // --- UPDATE CONNECTION HEALTH BADGES LIVE ---
+        function updateHealthBadges(tallyConnected, portalActive) {
+            const tallyDot = document.getElementById('tallyDot');
+            const tallyText = document.getElementById('tallyText');
+            const tallyBadge = document.getElementById('tallyStatusBadge');
 
-                    document.getElementById('erpCount').innerText = data.records.length;
-                    document.getElementById('erpTax').innerText = formatINR(data.summary.total_tax || 0);
-                    document.getElementById('erpBadge').innerText = "Purchase Register Loaded";
-                    document.getElementById('erpBadge').className = 'text-xs bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200 font-medium';
+            const portalDot = document.getElementById('portalDot');
+            const portalText = document.getElementById('portalText');
+            const portalBadge = document.getElementById('portalStatusBadge');
 
-                    document.getElementById('portalCount').innerText = data.records.length;
-                    document.getElementById('portalTax').innerText = formatINR(data.summary.total_tax || 0);
-                    document.getElementById('portalBadge').innerText = "GSTR-2B Portal Loaded";
-                    document.getElementById('portalBadge').className = 'text-xs bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200 font-medium';
+            if (tallyConnected) {
+                tallyBadge.className = "flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-xl font-semibold text-emerald-700 shadow-inner";
+                tallyDot.className = "w-2 h-2 rounded-full bg-emerald-500 shadow-sm";
+                tallyText.innerText = "Tally Connected";
+            } else {
+                tallyBadge.className = "flex items-center gap-1.5 bg-rose-50 border border-rose-200 px-3 py-2 rounded-xl font-semibold text-rose-700 shadow-inner";
+                tallyDot.className = "w-2 h-2 rounded-full bg-rose-500";
+                tallyText.innerText = "Tally Disconnected";
+            }
 
-                    renderStatusCards();
-                    renderActiveView();
-                }
-            } catch (err) {
-                console.error("Failed to load purchase recon:", err);
+            if (portalActive) {
+                portalBadge.className = "flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-xl font-semibold text-emerald-700 shadow-inner";
+                portalDot.className = "w-2 h-2 rounded-full bg-emerald-500 shadow-sm";
+                portalText.innerText = "Portal Connected";
+            } else {
+                portalBadge.className = "flex items-center gap-1.5 bg-rose-50 border border-rose-200 px-3 py-2 rounded-xl font-semibold text-rose-700 shadow-inner";
+                portalDot.className = "w-2 h-2 rounded-full bg-rose-500";
+                portalText.innerText = "Portal Disconnected";
             }
         }
 
-        // Dedicated Loader for Module 3 (Credit/Debit Notes)
-        async function loadNotesReconData() {
-            try {
-                const res = await fetch('/notes-recon');
-                const data = await res.json();
-                
-                if (data.status === 'success') {
-                    appState = { rows: data.records, party_summary: [] };
-                    const thead = document.getElementById('tableHead');
-                    
-                    thead.innerHTML = `
-                        <tr>
-                            <th class="p-3.5">Party GSTIN</th>
-                            <th class="p-3.5">Party Name</th>
-                            <th class="p-3.5">Type</th>
-                            <th class="p-3.5">ERP Note No</th>
-                            <th class="p-3.5">Portal Note No</th>
-                            <th class="p-3.5 text-right">ERP Tax (₹)</th>
-                            <th class="p-3.5 text-right">Portal Tax (₹)</th>
-                            <th class="p-3.5 text-right">Difference (₹)</th>
-                            <th class="p-3.5">Status</th>
-                            <th class="p-3.5">Suggested Action</th>
-                        </tr>
-                    `;
-
-                    document.getElementById('erpCount').innerText = data.summary.total_notes || 0;
-                    document.getElementById('erpTax').innerText = formatINR(data.summary.matched_tax || 0);
-                    document.getElementById('erpBadge').innerText = "ERP Notes Loaded";
-                    document.getElementById('erpBadge').className = 'text-xs bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200 font-medium';
-
-                    document.getElementById('portalCount').innerText = data.summary.total_notes || 0;
-                    document.getElementById('portalTax').innerText = formatINR(data.summary.matched_tax || 0);
-                    document.getElementById('portalBadge').innerText = "Portal Notes Loaded";
-                    document.getElementById('portalBadge').className = 'text-xs bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200 font-medium';
-
-                    renderStatusCards();
-                    renderActiveView();
-                }
-            } catch (err) {
-                console.error("Failed to load notes recon:", err);
+        // --- REAL-TIME OTP WORKFLOW ---
+        function triggerPortalOtpFlow() {
+            const gstin = document.getElementById('portalGstin').value;
+            const user = document.getElementById('portalUser').value;
+            if (!gstin || !user) {
+                alert("Please enter valid GSTIN and Portal Username.");
+                return;
             }
+            document.getElementById('otpModal').classList.remove('hidden');
         }
 
-        async function loadErpSample() {
-            if (activeModule === 'sales') {
-                await loadSalesReconData();
-            } else if (activeModule === 'purchase') {
-                await loadPurchaseReconData();
-            } else if (activeModule === 'notes') {
-                await loadNotesReconData();
+        function closeOtpModal() {
+            document.getElementById('otpModal').classList.add('hidden');
+        }
+
+        async function verifyOtpAndSync() {
+            const otp = document.getElementById('otpInput').value;
+            if (otp.length !== 6) {
+                alert("Please enter a valid 6-digit OTP.");
+                return;
             }
+            closeOtpModal();
+            
+            const res = await fetch('/api/master/sync', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ otp: otp }) });
+            const data = await res.json();
+            
+            // Turn badges green upon successful auth
+            updateHealthBadges(true, true);
+            alert(data.message + " — Authentication & Sync successful!");
+            switchModule('sales');
         }
 
-        async function loadPortalSample() {
-            if (activeModule === 'sales') {
-                await loadSalesReconData();
-            } else if (activeModule === 'purchase') {
-                await loadPurchaseReconData();
-            } else if (activeModule === 'notes') {
-                await loadNotesReconData();
-            }
-        }
-
-        async function quickDemoBoth() {
-            await switchModule('sales');
-        }
-
-        async function uploadErpFile() {
-            alert("File upload connector active. Please use backend integration.");
-        }
-
-        async function uploadPortalFile() {
-            alert("Portal file upload connector active.");
-        }
-
-        async function reRunWithTolerance() {
-            renderActiveView();
-        }
-
-        async function saveCurrentToVault() {
-            const batchName = prompt("Enter batch name (e.g. October_2026_Audit):", "October_2026_Recon");
-            if (!batchName) return;
-            alert("Current module session prepared for vault storage.");
-        }
-
-        async function openVaultModal() {
-            document.getElementById('vaultModal').classList.remove('hidden');
-            const listDiv = document.getElementById('vaultList');
-            listDiv.innerHTML = `
-                <div class="bg-[#F8FAFC] border border-[#E2E8F0] p-3.5 rounded-xl flex justify-between items-center">
-                    <div>
-                        <h4 class="text-xs font-bold text-[#0F172A]">October_2026_Audit_Batch</h4>
-                        <p class="text-[11px] text-[#64748B] mt-0.5">Saved: 2026-11-13 | Active Module: ${activeModule.toUpperCase()}</p>
+        // Custom dropdown builders & render functions...
+        function createCustomDropdown(id, label, options, selectedVal, callbackName) {
+            let optionsHtml = options.map(o => `
+                <div onclick="${callbackName}('${o.value}', '${o.label}')" class="px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition flex items-center justify-between ${o.value === selectedVal ? 'bg-blue-50/60 text-blue-600 font-bold' : ''}">
+                    <span>${o.label}</span>
+                    ${o.value === selectedVal ? '<span class="text-blue-600 text-xs">✓</span>' : ''}
+                </div>
+            `).join('');
+            let selectedObj = options.find(o => o.value === selectedVal) || options[0];
+            return `
+                <div class="relative inline-block text-left" id="dropdown_wrapper_${id}">
+                    <button type="button" onclick="toggleDropdown('${id}')" class="bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold px-4 py-2.5 rounded-xl text-xs shadow-sm transition flex items-center gap-2 justify-between min-w-[160px]">
+                        <span id="label_${id}">${selectedObj.label}</span>
+                        <span class="text-slate-400 text-[10px]">▼</span>
+                    </button>
+                    <div id="menu_${id}" class="hidden absolute right-0 mt-2 w-52 bg-white border border-slate-200 rounded-xl shadow-xl py-1.5 z-50">
+                        ${optionsHtml}
                     </div>
-                    <button onclick="closeVaultModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs transition">Select</button>
                 </div>
             `;
         }
 
-        function closeVaultModal() {
-            document.getElementById('vaultModal').classList.add('hidden');
+        function toggleDropdown(id) {
+            const menu = document.getElementById(`menu_${id}`);
+            document.querySelectorAll('[id^="menu_"]').forEach(el => {
+                if(el.id !== `menu_${id}`) el.classList.add('hidden');
+            });
+            menu.classList.toggle('hidden');
         }
 
-        async function loadVaultBatch(recId) {
-            closeVaultModal();
+        window.addEventListener('click', function(e) {
+            if (!e.target.closest('[id^="dropdown_wrapper_"]')) {
+                document.querySelectorAll('[id^="menu_"]').forEach(el => el.classList.add('hidden'));
+            }
+        });
+
+        function selectSortOption(val, label) {
+            currentSortValue = val;
+            document.getElementById('label_sortDropdown').innerText = label;
+            document.getElementById('menu_sortDropdown').classList.add('hidden');
+            renderTableData();
+        }
+        function selectNoteTypeOption(val, label) {
+            currentNoteTypeValue = val;
+            document.getElementById('label_noteDropdown').innerText = label;
+            document.getElementById('menu_noteDropdown').classList.add('hidden');
+            renderTableData();
+        }
+        function selectFyOption(val, label) {
+            currentFyValue = val;
+            document.getElementById('label_fyDropdown').innerText = label;
+            document.getElementById('menu_fyDropdown').classList.add('hidden');
+            renderTableData();
         }
 
-        async function resetAll() {
-            await switchModule(activeModule);
-        }
+        function renderModuleControls(mod) {
+            const controlsContainer = document.getElementById('moduleSpecificControls');
+            const sortContainer = document.getElementById('moduleSortContainer');
 
-        function selectStatus(st) {
-            activeStatus = st;
-            renderStatusCards();
-            renderActiveView();
-        }
-
-        function renderStatusCards() {
-            const cats = [
-                { key: 'ALL', label: 'All Records', bg: 'bg-[#F8FAFC]', border: 'border-[#E2E8F0]', activeRing: 'ring-2 ring-blue-600 bg-blue-50/50' },
-                { key: 'Matched', label: 'Matched / Verified', bg: 'bg-[#ECFDF5]', border: 'border-[#A7F3D0]', text: 'text-[#065F46]', activeRing: 'ring-2 ring-emerald-600 bg-emerald-50' },
-                { key: 'Value Differed', label: 'Value Differed', bg: 'bg-[#FFFBEB]', border: 'border-[#FDE68A]', text: 'text-[#92400E]', activeRing: 'ring-2 ring-amber-500 bg-amber-50' },
-                { key: 'Missing in Portal (2B/1)', label: 'Missing in Portal', bg: 'bg-[#FEF2F2]', border: 'border-[#FECACA]', text: 'text-[#991B1B]', activeRing: 'ring-2 ring-rose-600 bg-rose-50' },
-                { key: 'Missing in ERP Books', label: 'Missing in Books', bg: 'bg-[#FEF2F2]', border: 'border-[#FECACA]', text: 'text-[#991B1B]', activeRing: 'ring-2 ring-purple-600 bg-purple-50' }
-            ];
-            const rows = appState.rows || [];
-            document.getElementById('statusGrid').innerHTML = cats.map(c => {
-                const sub = c.key === 'ALL' ? rows : rows.filter(r => r.Status === c.key || (c.key === 'Matched' && r.Status === 'Eligible'));
-                const isSel = activeStatus === c.key ? c.activeRing : `${c.bg} border ${c.border} hover:shadow-sm`;
-
-                return `
-                    <div onclick="selectStatus('${c.key}')" class="cursor-pointer p-4 rounded-2xl ${isSel} transition-all duration-150 flex flex-col justify-between">
-                        <div>
-                            <div class="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">${c.label}</div>
-                            <div class="text-2xl font-bold font-mono mt-1 text-[#0F172A]">${sub.length}</div>
-                        </div>
+            if (mod === 'sales') {
+                controlsContainer.innerHTML = `
+                    <div class="flex items-center gap-1.5 text-xs bg-[#F8FAFC] border border-[#E2E8F0] px-3.5 py-2.5 rounded-xl text-[#475569] shadow-inner">
+                        <span class="font-semibold">Tolerance: ±₹</span>
+                        <input id="toleranceInput" type="number" value="2" min="0" step="1" onchange="renderTableData()" class="w-10 bg-transparent text-[#0F172A] font-bold font-mono text-center focus:outline-none" />
                     </div>
                 `;
-            }).join('');
+                sortContainer.innerHTML = createCustomDropdown('sortDropdown', 'Sort by', [{value:'default', label:'Sort by: Default'}, {value:'tax_desc', label:'Highest Tax Difference'}, {value:'date_desc', label:'Latest Invoice Date'}], currentSortValue, 'selectSortOption');
+            } else if (mod === 'notes') {
+                controlsContainer.innerHTML = createCustomDropdown('noteDropdown', 'Note Type', [{value:'ALL', label:'All Notes (CN & DN)'}, {value:'CN', label:'Credit Notes (CN)'}, {value:'DN', label:'Debit Notes (DN)'}], currentNoteTypeValue, 'selectNoteTypeOption');
+                sortContainer.innerHTML = createCustomDropdown('sortDropdown', 'Sort by', [{value:'default', label:'Sort by: Default'}, {value:'tax_desc', label:'Highest Tax Difference'}], currentSortValue, 'selectSortOption');
+            } else if (mod === 'purchase') {
+                controlsContainer.innerHTML = ``;
+                sortContainer.innerHTML = createCustomDropdown('sortDropdown', 'Sort by', [{value:'default', label:'Sort by: Default'}, {value:'val_desc', label:'Highest Taxable Value'}, {value:'date_desc', label:'Latest Purchase Date'}], currentSortValue, 'selectSortOption');
+            } else if (mod === 'itc_time') {
+                controlsContainer.innerHTML = createCustomDropdown('fyDropdown', 'Financial Year', [{value:'ALL', label:'All Financial Years'}, {value:'2025-26', label:'FY 2025-26'}, {value:'2024-25', label:'FY 2024-25'}], currentFyValue, 'selectFyOption');
+                sortContainer.innerHTML = createCustomDropdown('sortDropdown', 'Sort by', [{value:'default', label:'Sort by: Default'}, {value:'tax_desc', label:'Highest Tax Amount'}], currentSortValue, 'selectSortOption');
+            } else if (mod === 'rcm') {
+                controlsContainer.innerHTML = ``;
+                sortContainer.innerHTML = createCustomDropdown('sortDropdown', 'Sort by', [{value:'default', label:'Sort by: Default'}, {value:'val_desc', label:'Highest Taxable Value'}], currentSortValue, 'selectSortOption');
+            } else if (mod === 'gstr3b') {
+                controlsContainer.innerHTML = ``;
+                sortContainer.innerHTML = createCustomDropdown('sortDropdown', 'Sort by', [{value:'default', label:'Sort by: Default'}, {value:'variance_desc', label:'Highest Variance'}], currentSortValue, 'selectSortOption');
+            } else {
+                controlsContainer.innerHTML = ``;
+                sortContainer.innerHTML = ``;
+            }
         }
 
-        function renderActiveView() {
+        async function uploadErpFile() {
+            const fileInput = document.getElementById('erpFile');
+            if (!fileInput.files[0]) return alert('Please select a books file first.');
+            const fd = new FormData();
+            fd.append('file', fileInput.files[0]);
+            const res = await fetch('/api/master/upload-erp', { method: 'POST', body: fd });
+            const data = await res.json();
+            alert(data.message);
+            switchModule('sales');
+        }
+
+        async function uploadPortalFile() {
+            const fileInput = document.getElementById('portalFile');
+            if (!fileInput.files[0]) return alert('Please select a portal file first.');
+            const fd = new FormData();
+            fd.append('file', fileInput.files[0]);
+            const res = await fetch('/api/master/upload-portal', { method: 'POST', body: fd });
+            const data = await res.json();
+            alert(data.message);
+            switchModule('sales');
+        }
+
+        async function saveCurrentToVault() {
+            const batchName = prompt("Enter batch name for SQLite Vault storage:", "October_2026_Audit");
+            if (!batchName) return;
+            const res = await fetch('/api/vault/save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ batch_name: batchName }) });
+            const data = await res.json();
+            alert(data.error || data.message);
+        }
+
+        async function openVaultModal() {
+            document.getElementById('vaultModal').classList.remove('hidden');
+            const res = await fetch('/api/vault/list');
+            const history = await res.json();
+            const listDiv = document.getElementById('vaultList');
+            if (history.length === 0) {
+                listDiv.innerHTML = `<p class="text-xs text-[#64748B] text-center py-6">No saved history in vault.</p>`;
+                return;
+            }
+            listDiv.innerHTML = history.map(h => `
+                <div class="bg-[#F8FAFC] border border-[#E2E8F0] p-4 rounded-xl flex justify-between items-center hover:border-blue-300 transition">
+                    <div>
+                        <h4 class="text-xs font-bold text-[#0F172A]">${h.batch_name}</h4>
+                        <p class="text-[11px] text-[#64748B] mt-0.5">Saved: ${h.saved_at} | Bills: ${h.total_bills}</p>
+                    </div>
+                    <button onclick="loadVaultBatch(${h.id})" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-3.5 py-2 rounded-xl text-xs shadow-sm transition">Load Batch</button>
+                </div>
+            `).join('');
+        }
+
+        function closeVaultModal() { document.getElementById('vaultModal').classList.add('hidden'); }
+
+        async function loadVaultBatch(recId) {
+            const res = await fetch(`/api/vault/load/${recId}`);
+            const data = await res.json();
+            if (data.error) alert(data.error);
+            else { alert(data.message); closeVaultModal(); switchModule('sales'); }
+        }
+
+        async function loadDepartmentData(endpoint, type) {
+            try {
+                const res = await fetch(endpoint);
+                const data = await res.json();
+                if (data.status === 'success') {
+                    moduleData = data;
+                    setTableHeaders(type);
+                    renderStatusCards(data.records, type);
+                    renderTableData();
+                    // On data load, reflect active connection state
+                    updateHealthBadges(true, true);
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        function setTableHeaders(type) {
+            const thead = document.getElementById('tableHead');
+            if (type === 'sales') {
+                thead.innerHTML = `<tr><th class="p-4">Customer GSTIN</th><th class="p-4">Customer Name</th><th class="p-4">ERP Invoice</th><th class="p-4">GSTR-1 Invoice</th><th class="p-4">Date</th><th class="p-4 text-right">ERP Tax (₹)</th><th class="p-4 text-right">GSTR-1 Tax (₹)</th><th class="p-4 text-right">Difference (₹)</th><th class="p-4">Status</th><th class="p-4">Action</th></tr>`;
+            } else if (type === 'purchase') {
+                thead.innerHTML = `<tr><th class="p-4">Supplier GSTIN</th><th class="p-4">Supplier Name</th><th class="p-4">Invoice No</th><th class="p-4">Date</th><th class="p-4">Description</th><th class="p-4 text-right">Taxable Value (₹)</th><th class="p-4 text-right">Total Tax (₹)</th><th class="p-4">ITC Eligibility u/s 17(5)</th><th class="p-4">Rule Applied</th></tr>`;
+            } else if (type === 'notes') {
+                thead.innerHTML = `<tr><th class="p-4">Party GSTIN</th><th class="p-4">Party Name</th><th class="p-4">Type</th><th class="p-4">ERP Note No</th><th class="p-4">Portal Note No</th><th class="p-4 text-right">ERP Tax (₹)</th><th class="p-4 text-right">Portal Tax (₹)</th><th class="p-4 text-right">Difference (₹)</th><th class="p-4">Status</th><th class="p-4">Suggested Action</th></tr>`;
+            } else if (type === 'itc_time') {
+                thead.innerHTML = `<tr><th class="p-4">Invoice No</th><th class="p-4">Date</th><th class="p-4">Party Name</th><th class="p-4">GSTIN</th><th class="p-4 text-right">Taxable Value (₹)</th><th class="p-4 text-right">Total Tax (₹)</th><th class="p-4">Financial Year</th><th class="p-4">16(4) Due Date</th><th class="p-4">Validation Status</th><th class="p-4">Action</th></tr>`;
+            } else if (type === 'rcm') {
+                thead.innerHTML = `<tr><th class="p-4">Invoice No</th><th class="p-4">Date</th><th class="p-4">Supplier Name</th><th class="p-4">Supplier GSTIN</th><th class="p-4 text-right">Taxable Value (₹)</th><th class="p-4 text-right">CGST (₹)</th><th class="p-4 text-right">SGST (₹)</th><th class="p-4 text-right">IGST (₹)</th><th class="p-4">Portal Status</th><th class="p-4">Liability Status</th></tr>`;
+            } else if (type === 'gstr3b') {
+                thead.innerHTML = `<tr><th class="p-4">Tax Head</th><th class="p-4 text-right">GSTR-2B Eligible (₹)</th><th class="p-4 text-right">GSTR-3B Claimed (₹)</th><th class="p-4 text-right">Variance (₹)</th><th class="p-4">Compliance Status</th></tr>`;
+            }
+        }
+
+        function isRecordMatched(r) {
+            const s = String(r.Status || r.status || '').toLowerCase();
+            return s.includes('match') || s.includes('eligible') || s.includes('verified') || s.includes('standard');
+        }
+
+        function renderStatusCards(records, type) {
+            let cards = [];
+            if (type === 'itc_time') {
+                const eligible = records.filter(r => String(r.status || '').toLowerCase().includes('eligible'));
+                const timeBarred = records.filter(r => String(r.status || '').toLowerCase().includes('time-barred'));
+                cards = [
+                    { key: 'EXCEPTIONS_ONLY', label: 'Time-Barred Risks', count: timeBarred.length, bg: 'bg-rose-50/80 border-rose-200 text-rose-900' },
+                    { key: 'Eligible', label: 'Eligible Within Limit', count: eligible.length, bg: 'bg-emerald-50/80 border-emerald-200 text-emerald-900' }
+                ];
+            } else if (type === 'rcm') {
+                const matched = records.filter(r => String(r.status || '').toLowerCase().includes('matched'));
+                const unreported = records.filter(r => String(r.status || '').toLowerCase().includes('unreported'));
+                cards = [
+                    { key: 'EXCEPTIONS_ONLY', label: 'Unreported Liabilities', count: unreported.length, bg: 'bg-amber-50/80 border-amber-200 text-amber-900' },
+                    { key: 'Matched', label: 'Matched', count: matched.length, bg: 'bg-emerald-50/80 border-emerald-200 text-emerald-900' }
+                ];
+            } else if (type === 'gstr3b') {
+                const matches = records.filter(r => String(r.status || '').toLowerCase().includes('match'));
+                const variances = records.filter(r => !String(r.status || '').toLowerCase().includes('match'));
+                cards = [
+                    { key: 'EXCEPTIONS_ONLY', label: 'Variances / Risks', count: variances.length, bg: 'bg-rose-50/80 border-rose-200 text-rose-900' },
+                    { key: 'Matched', label: 'Perfect Matches', count: matches.length, bg: 'bg-emerald-50/80 border-emerald-200 text-emerald-900' }
+                ];
+            } else {
+                const matched = records.filter(r => isRecordMatched(r));
+                const exceptions = records.filter(r => !isRecordMatched(r));
+                const valueDiff = records.filter(r => String(r.Status || '').toLowerCase().includes('differ') || String(r.Status || '').toLowerCase().includes('mismatch'));
+                const missingPortal = records.filter(r => String(r.Status || '').toLowerCase().includes('missing in portal') || String(r.Status || '').toLowerCase().includes('missing in gstr'));
+                const missingBooks = records.filter(r => String(r.Status || '').toLowerCase().includes('missing in books') || String(r.Status || '').toLowerCase().includes('missing in erp'));
+
+                cards = [
+                    { key: 'EXCEPTIONS_ONLY', label: 'Total Exceptions', count: exceptions.length, bg: 'bg-amber-50/80 border-amber-200 text-amber-900' },
+                    { key: 'Matched', label: 'Matched / Verified', count: matched.length, bg: 'bg-emerald-50/80 border-emerald-200 text-emerald-900' },
+                    { key: 'Value Differed', label: 'Value Differed', count: valueDiff.length, bg: 'bg-blue-50/80 border-blue-200 text-blue-900' },
+                    { key: 'Missing in Portal', label: 'Missing in Portal', count: missingPortal.length, bg: 'bg-rose-50/80 border-rose-200 text-rose-900' },
+                    { key: 'Missing in Books', label: 'Missing in Books', count: missingBooks.length, bg: 'bg-purple-50/80 border-purple-200 text-purple-900' }
+                ];
+            }
+
+            document.getElementById('statusCardsGrid').innerHTML = cards.map(c => `
+                <div onclick="filterByCard('${c.key}')" class="cursor-pointer p-5 rounded-2xl border ${c.bg} shadow-sm hover:shadow-lg transition-all select-none group">
+                    <div class="text-[10px] font-bold uppercase tracking-wider opacity-80">${c.label}</div>
+                    <div class="text-3xl font-bold font-mono mt-2">${c.count}</div>
+                </div>
+            `).join('');
+        }
+
+        function filterByCard(statusKey) { activeStatusFilter = statusKey; renderTableData(); }
+
+        function renderTableData() {
             const q = document.getElementById('searchBox').value.toLowerCase();
-            const rows = (appState.rows || []).filter(r => {
-                const stOk = activeStatus === 'ALL' || r.Status === activeStatus;
-                const matchStr = JSON.stringify(r).toLowerCase();
-                const qOk = !q || matchStr.includes(q);
-                return stOk && qOk;
+            const sortBy = currentSortValue;
+            let tolerance = 0;
+            const tolInput = document.getElementById('toleranceInput');
+            if (tolInput) tolerance = parseFloat(tolInput.value) || 0;
+
+            let rows = (moduleData.records || []).filter(r => {
+                let matchesStatus = false;
+                const matched = isRecordMatched(r);
+
+                if (activeStatusFilter === 'EXCEPTIONS_ONLY') { matchesStatus = !matched; }
+                else if (activeStatusFilter === 'Matched') { matchesStatus = matched; }
+                else {
+                    const s = String(r.Status || r.status || '').toLowerCase();
+                    if (activeStatusFilter === 'Value Differed') matchesStatus = (s.includes('differ') || s.includes('mismatch'));
+                    else if (activeStatusFilter === 'Missing in Portal') matchesStatus = (s.includes('missing in portal') || s.includes('missing in gstr'));
+                    else if (activeStatusFilter === 'Missing in Books') matchesStatus = (s.includes('missing in books') || s.includes('missing in erp'));
+                    else matchesStatus = s.includes(activeStatusFilter.toLowerCase());
+                }
+
+                if (r.Tax_Difference !== undefined && Math.abs(r.Tax_Difference) <= tolerance && activeStatusFilter === 'EXCEPTIONS_ONLY') matchesStatus = false;
+                if (currentFyValue !== 'ALL' && r.financial_year && r.financial_year !== currentFyValue) matchesStatus = false;
+                if (currentNoteTypeValue !== 'ALL' && r.Note_Type && r.Note_Type !== currentNoteTypeValue) matchesStatus = false;
+
+                const matchesSearch = !q || JSON.stringify(r).toLowerCase().includes(q);
+                return matchesStatus && matchesSearch;
             });
 
+            if (sortBy === 'tax_desc') rows.sort((a, b) => (b.Tax_Difference || 0) - (a.Tax_Difference || 0));
+            else if (sortBy === 'date_desc') rows.sort((a, b) => new Date(b.Invoice_Date || b.date || 0) - new Date(a.Invoice_Date || a.date || 0));
+            else if (sortBy === 'val_desc') rows.sort((a, b) => (b.taxable_value || 0) - (a.taxable_value || 0));
+            else if (sortBy === 'variance_desc') rows.sort((a, b) => Math.abs(b.variance || 0) - Math.abs(a.variance || 0));
+
+            const tbody = document.getElementById('billsTbody');
             if (rows.length === 0) {
-                document.getElementById('billsTbody').innerHTML = `<tr><td colspan="11" class="p-8 text-center text-[#64748B] font-medium">No records found for this view or filter.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="10" class="p-10 text-center text-[#64748B] font-medium bg-white">No records found matching this filter or criteria.</td></tr>`;
                 return;
             }
 
-            if (activeModule === 'sales') {
-                document.getElementById('billsTbody').innerHTML = rows.map(r => `
-                    <tr class="hover:bg-[#F8FAFC] transition-colors">
-                        <td class="p-3.5 font-mono font-medium text-[#0F172A]">${r.Customer_GSTIN || '-'}</td>
-                        <td class="p-3.5 font-semibold text-[#0F172A]">${r.Customer_Name || '-'}</td>
-                        <td class="p-3.5 font-mono text-[#475569]">${r.ERP_Invoice_No || '-'}</td>
-                        <td class="p-3.5 font-mono text-[#475569]">${r.GSTR1_Invoice_No || '-'}</td>
-                        <td class="p-3.5 text-[#475569]">${r.Invoice_Date || '-'}</td>
-                        <td class="p-3.5 text-right font-mono">${formatINR(r.ERP_Tax)}</td>
-                        <td class="p-3.5 text-right font-mono">${formatINR(r.GSTR1_Tax)}</td>
-                        <td class="p-3.5 text-right font-mono font-bold ${r.Tax_Difference == 0 ? 'text-[#475569]' : 'text-amber-700'}">${formatINR(r.Tax_Difference)}</td>
-                        <td class="p-3.5"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide inline-block bg-amber-50 text-amber-700 border border-amber-200">${r.Status || 'Pending'}</span></td>
-                        <td class="p-3.5 text-blue-700 font-semibold">${r.Suggested_Action || '-'}</td>
-                    </tr>
-                `).join('');
-            } else if (activeModule === 'purchase') {
-                document.getElementById('billsTbody').innerHTML = rows.map(r => {
-                    const totalTax = (r.cgst || 0) + (r.sgst || 0) + (r.igst || 0);
-                    return `
-                        <tr class="hover:bg-[#F8FAFC] transition-colors">
-                            <td class="p-3.5 font-mono font-medium text-[#0F172A]">${r.gstin || '-'}</td>
-                            <td class="p-3.5 font-semibold text-[#0F172A]">${r.party_name || '-'}</td>
-                            <td class="p-3.5 font-mono text-[#475569]">${r.invoice_no || '-'}</td>
-                            <td class="p-3.5 text-[#475569]">${r.date || '-'}</td>
-                            <td class="p-3.5 text-[#475569]">${r.item_description || '-'}</td>
-                            <td class="p-3.5 text-right font-mono">${formatINR(r.taxable_value)}</td>
-                            <td class="p-3.5 text-right font-mono font-bold text-slate-700">${formatINR(totalTax)}</td>
-                            <td class="p-3.5"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide inline-block bg-emerald-50 text-emerald-700 border border-emerald-200">Eligible (100%)</span></td>
-                            <td class="p-3.5 text-blue-700 font-semibold">Standard ITC Claim</td>
-                        </tr>
-                    `;
-                }).join('');
-            } else if (activeModule === 'notes') {
-                document.getElementById('billsTbody').innerHTML = rows.map(r => `
-                    <tr class="hover:bg-[#F8FAFC] transition-colors">
-                        <td class="p-3.5 font-mono font-medium text-[#0F172A]">${r.GSTIN || '-'}</td>
-                        <td class="p-3.5 font-semibold text-[#0F172A]">${r.Party_Name || '-'}</td>
-                        <td class="p-3.5 font-mono font-bold text-indigo-600">${r.Note_Type || '-'}</td>
-                        <td class="p-3.5 font-mono text-[#475569]">${r.ERP_Note_No || '-'}</td>
-                        <td class="p-3.5 font-mono text-[#475569]">${r.Portal_Note_No || '-'}</td>
-                        <td class="p-3.5 text-right font-mono">${formatINR(r.ERP_Tax)}</td>
-                        <td class="p-3.5 text-right font-mono">${formatINR(r.Portal_Tax)}</td>
-                        <td class="p-3.5 text-right font-mono font-bold ${r.Tax_Difference == 0 ? 'text-slate-600' : 'text-amber-700'}">${formatINR(r.Tax_Difference)}</td>
-                        <td class="p-3.5"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide inline-block bg-amber-50 text-amber-700 border border-amber-200">${r.Status || '-'}</span></td>
-                        <td class="p-3.5 text-blue-700 font-semibold">${r.Suggested_Action || '-'}</td>
-                    </tr>
-                `).join('');
+            if (currentModule === 'sales') {
+                tbody.innerHTML = rows.map(r => `<tr class="hover:bg-[#F8FAFC] transition-colors"><td class="p-4 font-mono text-slate-700">${r.Customer_GSTIN || '-'}</td><td class="p-4 font-semibold text-[#0F172A]">${r.Customer_Name || '-'}</td><td class="p-4 font-mono">${r.ERP_Invoice_No || '-'}</td><td class="p-4 font-mono">${r.GSTR1_Invoice_No || '-'}</td><td class="p-4 text-slate-600">${r.Invoice_Date || '-'}</td><td class="p-4 text-right font-mono">${formatINR(r.ERP_Tax)}</td><td class="p-4 text-right font-mono">${formatINR(r.GSTR1_Tax)}</td><td class="p-4 text-right font-mono font-bold text-amber-700">${formatINR(r.Tax_Difference)}</td><td class="p-4"><span class="px-3 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">${r.Status}</span></td><td class="p-4 text-blue-600 font-semibold">${r.Suggested_Action}</td></tr>`).join('');
+            } else if (currentModule === 'purchase') {
+                tbody.innerHTML = rows.map(r => `<tr class="hover:bg-[#F8FAFC] transition-colors"><td class="p-4 font-mono text-slate-700">${r.gstin || '-'}</td><td class="p-4 font-semibold text-[#0F172A]">${r.party_name || '-'}</td><td class="p-4 font-mono">${r.invoice_no || '-'}</td><td class="p-4 text-slate-600">${r.date || '-'}</td><td class="p-4 text-slate-600">${r.item_description || '-'}</td><td class="p-4 text-right font-mono">${formatINR(r.taxable_value)}</td><td class="p-4 text-right font-mono font-bold">${formatINR((r.cgst||0)+(r.sgst||0)+(r.igst||0))}</td><td class="p-4"><span class="px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Eligible (100%)</span></td><td class="p-4 text-blue-600 font-semibold">Standard Claim</td></tr>`).join('');
+            } else if (currentModule === 'notes') {
+                tbody.innerHTML = rows.map(r => `<tr class="hover:bg-[#F8FAFC] transition-colors"><td class="p-4 font-mono text-slate-700">${r.GSTIN || '-'}</td><td class="p-4 font-semibold text-[#0F172A]">${r.Party_Name || '-'}</td><td class="p-4 font-mono font-bold text-indigo-600">${r.Note_Type || '-'}</td><td class="p-4 font-mono">${r.ERP_Note_No || '-'}</td><td class="p-4 font-mono">${r.Portal_Note_No || '-'}</td><td class="p-4 text-right font-mono">${formatINR(r.ERP_Tax)}</td><td class="p-4 text-right font-mono">${formatINR(r.Portal_Tax)}</td><td class="p-4 text-right font-mono font-bold text-amber-700">${formatINR(r.Tax_Difference)}</td><td class="p-4"><span class="px-3 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">${r.Status}</span></td><td class="p-4 text-blue-600 font-semibold">${r.Suggested_Action}</td></tr>`).join('');
+            } else if (currentModule === 'itc_time') {
+                tbody.innerHTML = rows.map(r => `<tr class="hover:bg-[#F8FAFC] transition-colors"><td class="p-4 font-mono">${r.invoice_no || '-'}</td><td class="p-4 text-slate-600">${r.date || '-'}</td><td class="p-4 font-semibold text-[#0F172A]">${r.party_name || '-'}</td><td class="p-4 font-mono text-slate-700">${r.gstin || '-'}</td><td class="p-4 text-right font-mono">${formatINR(r.taxable_value)}</td><td class="p-4 text-right font-mono font-bold">${formatINR(r.total_tax)}</td><td class="p-4 font-mono">${r.financial_year || '-'}</td><td class="p-4 font-mono text-rose-600 font-bold">${r.due_date_16_4 || '-'}</td><td class="p-4"><span class="px-3 py-1 rounded-full text-[10px] font-bold ${r.status.includes('Time-Barred') ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}">${r.status}</span></td><td class="p-4 text-blue-600 font-semibold">${r.action}</td></tr>`).join('');
+            } else if (currentModule === 'rcm') {
+                tbody.innerHTML = rows.map(r => `<tr class="hover:bg-[#F8FAFC] transition-colors"><td class="p-4 font-mono">${r.invoice_no || '-'}</td><td class="p-4 text-slate-600">${r.date || '-'}</td><td class="p-4 font-semibold text-[#0F172A]">${r.supplier_name || '-'}</td><td class="p-4 font-mono text-slate-700">${r.gstin || '-'}</td><td class="p-4 text-right font-mono">${formatINR(r.taxable_value)}</td><td class="p-4 text-right font-mono">${formatINR(r.cgst)}</td><td class="p-4 text-right font-mono">${formatINR(r.sgst)}</td><td class="p-4 text-right font-mono">${formatINR(r.igst)}</td><td class="p-4 text-slate-600 font-medium">${r.portal_status}</td><td class="p-4"><span class="px-3 py-1 rounded-full text-[10px] font-bold ${r.status.includes('Unreported') ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}">${r.status}</span></td></tr>`).join('');
+            } else if (currentModule === 'gstr3b') {
+                tbody.innerHTML = rows.map(r => `<tr class="hover:bg-[#F8FAFC] transition-colors"><td class="p-4 font-bold text-[#0F172A]">${r.tax_head || '-'}</td><td class="p-4 text-right font-mono">${formatINR(r.gstr_2b_eligible)}</td><td class="p-4 text-right font-mono">${formatINR(r.gstr_3b_claimed)}</td><td class="p-4 text-right font-mono font-bold ${r.variance == 0 ? 'text-slate-600' : 'text-rose-600'}">${formatINR(r.variance)}</td><td class="p-4"><span class="px-3 py-1 rounded-full text-[10px] font-bold ${r.status.includes('Match') ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}">${r.status}</span></td></tr>`).join('');
             }
         }
 
-        function exportFile(fmt) {
-            window.location.href = `/api/export?status=${encodeURIComponent(activeStatus)}&fmt=${fmt}`;
+        async function resetWorkspace() {
+            await fetch('/api/master/reset', { method: 'POST' });
+            updateHealthBadges(false, false);
+            switchModule('home');
         }
 
-        // Initialize default view on page load
-        switchModule('sales');
+        function exportReport() {
+            window.location.href = currentModule === 'sales' ? '/sales-recon' : '/purchase-recon';
+        }
+
+        // Initialize Home view with correct standby status
+        switchModule('home');
+        updateHealthBadges(false, false);
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleIconSvg = document.getElementById('toggleIconSvg');
+            const navTexts = document.querySelectorAll('.nav-text');
+            const sidebarTitleWrapper = document.getElementById('sidebarTitleWrapper');
+            const footerTextWrapper = document.getElementById('footerTextWrapper');
+            const sidebarHeader = document.getElementById('sidebarHeader');
+            
+            if (sidebar.classList.contains('w-72')) {
+                // Collapse sidebar to w-24 (96px) so toggle button + CA logo fit perfectly side-by-side without clipping
+                sidebar.classList.remove('w-72');
+                sidebar.classList.add('w-24');
+                sidebarHeader.className = "p-3 border-b border-slate-800 flex items-center justify-center gap-1 bg-slate-950/50 whitespace-nowrap transition-all duration-300";
+                toggleIconSvg.style.transform = 'rotate(180deg)';
+                
+                sidebarTitleWrapper.style.opacity = '0';
+                sidebarTitleWrapper.style.width = '0';
+                footerTextWrapper.style.opacity = '0';
+                navTexts.forEach(el => {
+                    el.style.opacity = '0';
+                    el.style.display = 'none';
+                });
+            } else {
+                // Expand sidebar back to w-72
+                sidebar.classList.remove('w-24');
+                sidebar.classList.add('w-72');
+                sidebarHeader.className = "p-3.5 border-b border-slate-800 flex items-center justify-between gap-2 bg-slate-950/50 whitespace-nowrap transition-all duration-300";
+                toggleIconSvg.style.transform = 'rotate(0deg)';
+                
+                navTexts.forEach(el => {
+                    el.style.display = 'inline';
+                    setTimeout(() => el.style.opacity = '1', 50);
+                });
+                sidebarTitleWrapper.style.width = 'auto';
+                sidebarTitleWrapper.style.opacity = '1';
+                footerTextWrapper.style.opacity = '1';
+            }
+        }   
     </script>
 </body>
 </html>
